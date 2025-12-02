@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Documentos Técnicos</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Cabeçalho -->
+        <header class="header">
+            <div class="logo">
+                <i class="fas fa-file-contract"></i>
+                <h1>Gerador de Documentos Técnicos</h1>
+            </div>
+            <p class="subtitle">Preencha o formulário abaixo para gerar documentos técnicos automaticamente</p>
+        </header>
+
+        <div class="main-content">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <div class="sidebar-section">
+                    <h3><i class="fas fa-file-alt"></i> Templates Disponíveis</h3>
+                    <ul id="template-list">
+                        <li><i class="fas fa-check-circle"></i> Memorial Descritivo</li>
+                        <li><i class="fas fa-check-circle"></i> Procuração</li>
+                        <li><i class="fas fa-check-circle"></i> Termo de Responsabilidade</li>
+                        <li><i class="fas fa-check-circle"></i> Carta de Viabilidade</li>
+                        <li><i class="fas fa-check-circle"></i> Termo de Não Geração</li>
+                    </ul>
+                </div>
+
+                <div class="sidebar-section">
+                    <h3><i class="fas fa-info-circle"></i> Instruções</h3>
+                    <ol class="instructions">
+                        <li>Preencha todos os campos do formulário</li>
+                        <li>Selecione o engenheiro e cliente</li>
+                        <li>Clique em 'Gerar Documentos'</li>
+                        <li>Faça o download dos documentos gerados</li>
+                    </ol>
+                </div>
+
+                <div class="sidebar-section">
+                    <h3><i class="fas fa-headset"></i> Suporte</h3>
+                    <p>Em caso de problemas, entre em contato com o administrador do sistema.</p>
+                </div>
+            </aside>
+
+            <!-- Conteúdo Principal -->
+            <main class="content">
+                <!-- Formulário -->
+                <form id="document-form">
+                    <section class="form-section">
+                        <h2><i class="fas fa-pencil-alt"></i> Dados do Projeto</h2>
+                        
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="potencia">POTÊNCIA DA SUBESTAÇÃO EM KVA *</label>
+                                <input type="text" id="potencia" placeholder="Ex: 225" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="art">ART *</label>
+                                <input type="text" id="art" placeholder="Ex: AM20240488640" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="tensao">TENSÃO GERAL *</label>
+                                <input type="text" id="tensao" placeholder="Ex: 380/220, 220/127V" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="ramal_tamanho">Tamanho do ramal de entrada *</label>
+                                <input type="text" id="ramal_tamanho" placeholder="Ex: 150" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="ramal_cabo">Cabo do ramal de entrada MT *</label>
+                                <input type="text" id="ramal_cabo" placeholder="Ex: 35mm²" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="nome_projeto">Nome do projeto *</label>
+                                <input type="text" id="nome_projeto" placeholder="Ex: Construção de Escola" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="concessionaria">Concessionária *</label>
+                                <input type="text" id="concessionaria" placeholder="Ex: RORAIMA ENERGIA" value="RORAIMA ENERGIA" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="numero_uc">Número da UC *</label>
+                                <input type="text" id="numero_uc" placeholder="Ex: UCXXXXXXX ou S/N°" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="demanda">Demanda do Projeto *</label>
+                                <input type="text" id="demanda" placeholder="Ex: 1500" required>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    <section class="form-section">
+                        <h2><i class="fas fa-map-marker-alt"></i> Localização</h2>
+                        
+                        <div class="form-group">
+                            <label for="endereco_empreendimento">ENDEREÇO DO EMPREENDIMENTO *</label>
+                            <input type="text" id="endereco_empreendimento" placeholder="Ex: Rua Coronel Pinto, nº 664, Centro, Boa Vista - RR" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="localizacao_projeto">Coordenadas Geográficas *</label>
+                            <input type="text" id="localizacao_projeto" placeholder="Ex: 2°50'29.1'N 60°42'27.4'W" required>
+                        </div>
+                    </section>
+                    
+                    <section class="form-section">
+                        <h2><i class="fas fa-calendar-alt"></i> Datas da Obra</h2>
+                        
+                        <div class="form-grid-2">
+                            <div class="form-group">
+                                <label for="data_inicio">Início da Obra *</label>
+                                <input type="text" id="data_inicio" placeholder="Ex: 10/08/2025" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="data_fim">Fim da Obra *</label>
+                                <input type="text" id="data_fim" placeholder="Ex: 10/08/2065" required>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    <section class="form-section">
+                        <h2><i class="fas fa-users"></i> Seleção de Profissionais e Clientes</h2>
+                        
+                        <div class="form-grid-2">
+                            <div class="form-group">
+                                <label for="engenheiro">Engenheiro Responsável *</label>
+                                <select id="engenheiro" required>
+                                    <option value="">Selecione um engenheiro</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="cliente">Cliente *</label>
+                                <select id="cliente" required>
+                                    <option value="">Selecione um cliente</option>
+                                </select>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    <section class="form-section">
+                        <h2><i class="fas fa-file-contract"></i> Opções de Documentos</h2>
+                        
+                        <div class="checkbox-group">
+                            <label>
+                                <input type="checkbox" id="gerar_termo_nao_geracao" checked>
+                                Gerar Termo de Não Utilização de Geração Própria
+                            </label>
+                        </div>
+                    </section>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn-generate">
+                            <i class="fas fa-sync-alt"></i> Gerar Documentos
+                        </button>
+                        <button type="button" id="reset-btn" class="btn-reset">
+                            <i class="fas fa-redo"></i> Limpar Formulário
+                        </button>
+                    </div>
+                </form>
+                
+                <!-- Resultados -->
+                <div id="results-section" class="hidden">
+                    <section class="results-section">
+                        <h2><i class="fas fa-download"></i> Download dos Documentos</h2>
+                        <div class="success-message">
+                            <i class="fas fa-check-circle"></i>
+                            <p>Documentos gerados com sucesso!</p>
+                        </div>
+                        
+                        <div id="documents-container" class="documents-grid">
+                            <!-- Os documentos serão inseridos aqui via JavaScript -->
+                        </div>
+                        
+                        <div class="download-all">
+                            <h3><i class="fas fa-file-archive"></i> Baixar Todos os Documentos</h3>
+                            <button id="download-all-btn" class="btn-download-all">
+                                <i class="fas fa-file-archive"></i> Baixar Todos os Documentos (ZIP)
+                            </button>
+                        </div>
+                        
+                        <div class="data-summary">
+                            <h3><i class="fas fa-clipboard-list"></i> Visualizar Dados Preenchidos</h3>
+                            <div id="data-summary-content">
+                                <!-- Resumo dos dados será inserido aqui -->
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </main>
+        </div>
+        
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Sistema de Geração de Documentos Técnicos &copy; 2024</p>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="script.js"></script>
+</body>
+</html>
