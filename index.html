@@ -10,7 +10,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/pizzip@3.1.1/dist/pizzip.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/docxtemplater@3.42.4/build/docxtemplater.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.42.4/docxtemplater.min.js"></script>
 </head>
 <body>
     <div class="container">
@@ -75,11 +74,35 @@
                             </div>
                             
                             <div class="form-group">
+                                <label for="art">
+                                    <i class="fas fa-file-signature"></i> ART *
+                                </label>
+                                <input type="text" id="art" placeholder="Ex: AM20240488640" required>
+                                <small>Substituirá [YYYY] nos documentos</small>
+                            </div>
+                            
+                            <div class="form-group">
                                 <label for="tensao">
                                     <i class="fas fa-plug"></i> TENSÃO GERAL *
                                 </label>
                                 <input type="text" id="tensao" placeholder="Ex: 380/220, 220/127V" required>
                                 <small>Substituirá [DDDD] nos documentos</small>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="ramal_tamanho">
+                                    <i class="fas fa-ruler"></i> Tamanho do ramal de entrada *
+                                </label>
+                                <input type="text" id="ramal_tamanho" placeholder="Ex: 150" required>
+                                <small>Substituirá [EEEE] nos documentos</small>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="ramal_cabo">
+                                    <i class="fas fa-cable-car"></i> Cabo do ramal de entrada MT *
+                                </label>
+                                <input type="text" id="ramal_cabo" placeholder="Ex: 35mm²" required>
+                                <small>Substituirá [FFFF] nos documentos</small>
                             </div>
                         </div>
                     </section>
