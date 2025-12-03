@@ -448,12 +448,11 @@ function getTrafoData(potencia, tensao, trafoNumber) {
         return getTrafoData('', '', trafoNumber); // Tensão desconhecida
     }
 
-    // Retorna o objeto com os novos placeholders e seus valores
+    // Retorna o objeto com os novos placeholders e seus valores (CORRIGIDO: Removida a linha IZXY)
     return {
         [`IBXX${trafoNumber}`]: IB_ARR[index],
         [`INXX${trafoNumber}`]: IN_ARR[index],
         [`IZXX${trafoNumber}`]: IZ_ARR[index],
-        [`IZXY${trafoNumber}`]: IZ_ARR[index],
         [`CABX${trafoNumber}`]: CAB_ARR[index],
         [`QTDY${trafoNumber}`]: QTD_CAB_ARR[index]
     };
