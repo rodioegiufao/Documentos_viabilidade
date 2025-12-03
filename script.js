@@ -83,8 +83,21 @@ const CLIENTES = {
 
 // Dados para os Transformadores
 const PT_TRAFO = [112.5, 150, 225, 500, 750, 1000, 1250, 1500];
-// NOVO: Opções de Tensão do Trafo
 const TENSOES_TRAFO = ["220/127V", "380V/220V"]; 
+
+// Dados de proteção para 220/127V (Índices correspondem a PT_TRAFO)
+const IB_220 = [296.05, 394.74, 592.11, 1315.79, 1973.68, 2631.58, 3289.47, 3947.36];
+const IN_220 = [300, 400, 630, 1600, 2000, 3200, 3500, 4000];
+const IZ_220 = [444, 624, 716, 1924, 2405, 3367, 4424, 4424];
+const CAB_220 = [70, 95, 150, 240, 240, 240, 300, 300];
+const QTD_CAB_220 = ["2x70", "2x95", "2x150", "4x240", "5x240", "7x240", "8x300", "8x300"];
+ 
+// Dados de proteção para 380V/220V (Índices correspondem a PT_TRAFO)
+const IB_380 = [170.93, 227.90, 341.85, 759.67, 1139.51, 1519.34, 1899.17, 2279.01];
+const IN_380 = [200, 300, 400, 800, 1250, 1600, 2000, 2500];
+const IZ_380 = [222, 444, 444, 816, 1443, 1924, 2405, 2886];
+const CAB_380 = [70, 70, 70, 185, 240, 240, 240, 240];
+const QTD_CAB_380 = ["70", "2x70", "2x70", "2x185", "3x240", "4x240", "5x240", "6x240"];
 
 // Mapeamento dos meses em português
 const MESES_PT_BR = {
@@ -130,7 +143,10 @@ async function initApp() {
     setupEventListeners();
 }
 
-// ATUALIZADO: Função para popular Potências e TENSÕES
+/**
+ * NOVO: Função para popular Potências e TENSÕES para os transformadores.
+ * Incluído para compatibilidade com o HTML da interação anterior.
+ */
 function populateTrafoPotenciasAndTensoes() {
     const select1 = document.getElementById('potencia_trafo_1');
     const select2 = document.getElementById('potencia_trafo_2');
@@ -167,6 +183,10 @@ function populateTrafoPotenciasAndTensoes() {
     addTensaoOptions(tensao2);
 }
 
+/**
+ * NOVO: Função para controlar a visibilidade dos campos do Trafo 2.
+ * Incluído para compatibilidade com o HTML da interação anterior.
+ */
 function setupTrafoQuantityListener() {
     const quantitySelect = document.getElementById('quantidade_trafos');
     const trafo2Fields = document.getElementById('trafo_2_fields');
@@ -197,7 +217,7 @@ function setupTrafoQuantityListener() {
         toggleTrafo2(event.target.value === '2');
     });
 }
-// FIM: Funções de Trafo
+
 
 function setupDefaultDates() {
     const hoje = new Date();
@@ -357,14 +377,12 @@ async function processarFormulario() {
 }
 
 function validarFormulario() {
-    // Campos ORIGINAIS (Dados do Projeto)
     const camposObrigatorios = [
         'potencia', 'art', 'tensao', 'ramal_tamanho', 'ramal_cabo',
-        // NOVOS campos da Subestação (carga_instalada MOVIDA, mas ainda validada aqui)
-        'potencia_trafo_1', 'tensao_trafo_1', 'tipo_trafo',
-        // Demais campos
+        'potencia_trafo_1', 'tensao_trafo_1', 'tipo_trafo', // Novos campos de Trafo 1 e Tipo
+        'carga_instalada', // Campo movido/novo
         'nome_projeto', 'concessionaria', 'endereco_empreendimento',
-        'localizacao_projeto', 'numero_uc', 'demanda', 'carga_instalada', 'data_inicio', 'data_fim', // 'carga_instalada' movida, mas o ID permanece
+        'localizacao_projeto', 'numero_uc', 'demanda', 'data_inicio', 'data_fim',
         'engenheiro', 'cliente'
     ];
     
@@ -387,42 +405,103 @@ function validarFormulario() {
     return true;
 }
 
+/**
+ * FUNÇÃO DE AJUDA: Calcula os dados de proteção (IB, IN, IZ, CAB, QTD_CAB)
+ * para um transformador específico.
+ */
+function getTrafoData(potencia, tensao, trafoNumber) {
+    // Retorna N/A se a potência ou tensão estiverem faltando
+    if (!potencia || !tensao) {
+        return {
+            [`IBXX${trafoNumber}`]: 'N/A',
+            [`INXX${trafoNumber}`]: 'N/A',
+            [`IZXX${trafoNumber}`]: 'N/A',
+            [`CABX${trafoNumber}`]: 'N/A',
+            [`QTDY${trafoNumber}`]: 'N/A'
+        };
+    }
+
+    // Busca o índice da potência no array PT_TRAFO
+    const index = PT_TRAFO.indexOf(parseFloat(potencia));
+
+    if (index === -1) {
+        console.error(`Potência ${potencia} não encontrada em PT_TRAFO.`);
+        return getTrafoData('', '', trafoNumber); // Fallback para N/A
+    }
+
+    let IB_ARR, IN_ARR, IZ_ARR, CAB_ARR, QTD_CAB_ARR;
+
+    // Seleciona o conjunto de arrays de proteção com base na tensão
+    if (tensao === "220/127V") {
+        IB_ARR = IB_220;
+        IN_ARR = IN_220;
+        IZ_ARR = IZ_220;
+        CAB_ARR = CAB_220;
+        QTD_CAB_ARR = QTD_CAB_220;
+    } else if (tensao === "380V/220V") {
+        IB_ARR = IB_380;
+        IN_ARR = IN_380;
+        IZ_ARR = IZ_380;
+        CAB_ARR = CAB_380;
+        QTD_CAB_ARR = QTD_CAB_380;
+    } else {
+        return getTrafoData('', '', trafoNumber); // Tensão desconhecida
+    }
+
+    // Retorna o objeto com os novos placeholders e seus valores
+    return {
+        [`IBXX${trafoNumber}`]: IB_ARR[index],
+        [`INXX${trafoNumber}`]: IN_ARR[index],
+        [`IZXX${trafoNumber}`]: IZ_ARR[index],
+        [`CABX${trafoNumber}`]: CAB_ARR[index],
+        [`QTDY${trafoNumber}`]: QTD_CAB_ARR[index]
+    };
+}
+
+
 function coletarDadosFormulario() {
-    // Dados da Subestação (Novos)
-    const potencia1 = document.getElementById('potencia_trafo_1').value;
-    const tensao1 = document.getElementById('tensao_trafo_1').value;
-    const qtdTrafos = document.getElementById('quantidade_trafos').value;
-    const tipoTrafo = document.getElementById('tipo_trafo').value;
-    const cargaInstalada = document.getElementById('carga_instalada').value;
+    // Novos campos de Trafo 
+    const potencia1 = document.getElementById('potencia_trafo_1')?.value || '';
+    const tensao1 = document.getElementById('tensao_trafo_1')?.value || '';
+    const tipoTrafo = document.getElementById('tipo_trafo')?.value || 'N/A';
+    const cargaInstalada = document.getElementById('carga_instalada')?.value || 'N/A';
+
+    const qtdTrafos = document.getElementById('quantidade_trafos')?.value || '1';
 
     let potencia2 = '';
     let tensao2 = '';
-    let potenciaTotalCalculada = parseFloat(potencia1);
 
     if (qtdTrafos === '2') {
-        potencia2 = document.getElementById('potencia_trafo_2').value;
-        tensao2 = document.getElementById('tensao_trafo_2').value;
-        if (potencia2) {
-            potenciaTotalCalculada += parseFloat(potencia2);
-        }
+        potencia2 = document.getElementById('potencia_trafo_2')?.value || '';
+        tensao2 = document.getElementById('tensao_trafo_2')?.value || '';
     }
+    
+    // **CALCULA DADOS DE PROTEÇÃO**
+    const dadosTrafo1 = getTrafoData(potencia1, tensao1, 1);
+    const dadosTrafo2 = getTrafoData(potencia2, tensao2, 2);
 
-    // Mapeamento dos placeholders
+
     const dados = {
-        // PLACEHOLDERS ORIGINAIS (Dados do Projeto) - RESTAURADO
+        // PLACEHOLDERS ORIGINAIS (Dados do Projeto)
         'XXXX': document.getElementById('potencia').value, // POTÊNCIA DA SUBESTAÇÃO EM KVA
         'YYYY': document.getElementById('art').value,       // ART
         'DDDD': document.getElementById('tensao').value,    // TENSÃO GERAL
         'EEEE': document.getElementById('ramal_tamanho').value, // Tamanho do ramal
         'FFFF': document.getElementById('ramal_cabo').value,    // Cabo do ramal
         
-        // PLACEHOLDERS DA SUBESTAÇÃO (Detalhes) - ADICIONADO
+        // PLACEHOLDERS DA SUBESTAÇÃO (Detalhes) 
         'PTF1': potencia1, // Potência do Trafo 1
         'TTF1': tensao1,   // Tensão do Trafo 1
         'PTF2': potencia2 || 'N/A', // Potência do Trafo 2 (ou N/A)
         'TTF2': tensao2 || 'N/A',   // Tensão do Trafo 2 (ou N/A)
         'TIPO_TRAFO': tipoTrafo, // Tipo do Trafo
-        'ZXXZ': cargaInstalada, // Carga Instalada (ID mantido, apenas posição no HTML mudou)
+        'ZXXZ': cargaInstalada, // Carga Instalada (Novo/Movido)
+        
+        // Dados de Proteção (Trafo 1) - NOVOS PLACEHOLDERS
+        ...dadosTrafo1,
+        
+        // Dados de Proteção (Trafo 2) - NOVOS PLACEHOLDERS
+        ...dadosTrafo2,
         
         // PLACEHOLDERS EXISTENTES (Outros)
         'GGGG': document.getElementById('nome_projeto').value,
