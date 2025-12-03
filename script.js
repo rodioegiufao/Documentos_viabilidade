@@ -453,6 +453,7 @@ function getTrafoData(potencia, tensao, trafoNumber) {
         [`IBXX${trafoNumber}`]: IB_ARR[index],
         [`INXX${trafoNumber}`]: IN_ARR[index],
         [`IZXX${trafoNumber}`]: IZ_ARR[index],
+        [`IZXY${trafoNumber}`]: IZ_ARR[index],
         [`CABX${trafoNumber}`]: CAB_ARR[index],
         [`QTDY${trafoNumber}`]: QTD_CAB_ARR[index]
     };
