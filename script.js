@@ -424,44 +424,41 @@ async function gerarDocumentosWord(dados, documentosParaGerar) {
 }
 
 async function processarTemplateWord(arrayBuffer, dados) {
-    // Para simplificar, vamos fazer uma substituição básica no conteúdo binário
-    // Nota: Esta é uma abordagem simplificada. Para substituição complexa em Word,
-    // seria necessário usar docxtemplater ou similar
-    
     try {
-        // Converter ArrayBuffer para Uint8Array
-        const data = new Uint8Array(arrayBuffer);
-        
-        // Converter para string (simplificado - funciona para textos simples)
-        let content = '';
-        for (let i = 0; i < data.length; i++) {
-            content += String.fromCharCode(data[i]);
-        }
-        
-        // Substituir placeholders (simplificado)
-        Object.keys(dados).forEach(key => {
-            const placeholder = `[${key}]`;
-            const value = dados[key];
-            // Substituir de forma simples (pode não funcionar para formatação complexa)
-            content = content.split(placeholder).join(value);
+        // 1. Carregar o ArrayBuffer com Pizzip
+        const zip = new PizZip(arrayBuffer);
+
+        // 2. Criar uma instância de Docxtemplater
+        const doc = new docxtemplater(zip, {
+            paragraphLoop: true,
+            linebreaks: true,
         });
-        
-        // Converter de volta para ArrayBuffer
-        const buffer = new ArrayBuffer(content.length);
-        const view = new Uint8Array(buffer);
-        for (let i = 0; i < content.length; i++) {
-            view[i] = content.charCodeAt(i);
-        }
-        
-        return buffer;
-        
+
+        // 3. Definir os dados para substituição
+        // Nota: As chaves no 'dados' devem ser iguais aos placeholders no Word.
+        doc.setData(dados);
+
+        // 4. Executar a substituição
+        doc.render();
+
+        // 5. Gerar o novo arquivo binário (.docx)
+        const content = doc.getZip().generate({
+            type: "arraybuffer",
+            mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            compression: "DEFLATE",
+        });
+
+        return content;
     } catch (error) {
-        console.error('Erro no processamento Word:', error);
-        // Fallback: retornar o buffer original
-        return arrayBuffer;
+        console.error('Erro ao processar template Word:', error);
+        // Exibir detalhes de erro do Docxtemplater, se possível
+        if (error.properties) {
+            console.log('Descrição do erro:', error.properties.explanation);
+            console.log('Erro na tag:', error.properties.xtag);
+        }
+        throw new Error('Falha ao gerar o documento Word com Docxtemplater.');
     }
 }
-
 function exibirResultados() {
     const resultsSection = document.getElementById('results-section');
     const documentsContainer = document.getElementById('documents-container');
