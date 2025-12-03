@@ -1,3 +1,7 @@
+// No início do arquivo, adicione esta verificação
+console.log('JSZip disponível?', typeof JSZip !== 'undefined');
+console.log('docxtemplater disponível?', typeof docxtemplater !== 'undefined');
+
 // Dados fixos
 const ENGENHEIROS = {
     "SALOMÃO JOSE COHEN": {
@@ -509,36 +513,31 @@ async function gerarDocumentosWordCorrigido(dados, documentosParaGerar) {
     }
 }
 
-// Função corrigida com tratamento melhor de erros
 async function processarTemplateWordCorrigido(arrayBuffer, dados) {
     return new Promise((resolve, reject) => {
         try {
-            // Verificar se PizZip e docxtemplater estão disponíveis
-            if (typeof PizZip === 'undefined' || typeof window.docxtemplater === 'undefined') {
-                throw new Error('Bibliotecas de processamento Word não carregadas');
+            // Verificar se JSZip e docxtemplater estão disponíveis
+            if (typeof JSZip === 'undefined' || typeof docxtemplater === 'undefined') {
+                console.error('JSZip:', typeof JSZip);
+                console.error('docxtemplater:', typeof docxtemplater);
+                throw new Error('Bibliotecas de processamento Word não carregadas. Verifique o console.');
             }
             
-            // Carregar o template
-            const zip = new PizZip(arrayBuffer);
+            console.log('Processando template...');
             
-            let doc;
-            try {
-                doc = new window.docxtemplater(zip, {
-                    paragraphLoop: true,
-                    linebreaks: true,
-                    parser: function(tag) {
-                        return {
-                            get: function(scope) {
-                                // Retornar o valor ou string vazia se não existir
-                                return scope[tag] || '';
-                            }
-                        };
-                    }
-                });
-            } catch (initError) {
-                console.error('Erro ao inicializar docxtemplater:', initError);
-                throw new Error('Formato de template inválido');
-            }
+            // Carregar o template com JSZip
+            const zip = new JSZip();
+            zip.load(arrayBuffer);
+            
+            // Inicializar docxtemplater
+            const doc = new docxtemplater();
+            doc.loadZip(zip);
+            
+            // Configurar opções
+            doc.setOptions({
+                paragraphLoop: true,
+                linebreaks: true
+            });
             
             // Preparar dados para substituição
             const templateData = {};
@@ -548,29 +547,16 @@ async function processarTemplateWordCorrigido(arrayBuffer, dados) {
                 templateData[key] = String(dados[key] || '');
             });
             
-            // Adicionar algumas propriedades extras para formatação
-            templateData['underline_MMMM'] = dados['MMMM'] || '';
-            templateData['underline_OOOO'] = dados['OOOO'] || '';
-            templateData['underline_GGGG'] = dados['GGGG'] || '';
-            templateData['underline_XXXY'] = dados['XXXY'] || '';
-            templateData['underline_HHHH'] = dados['HHHH'] || '';
-            templateData['underline_NNNN'] = dados['NNNN'] || '';
-            templateData['underline_VVVV'] = dados['VVVV'] || '';
-            templateData['underline_XXXX'] = dados['XXXX'] || '';
-            templateData['underline_ZXZX'] = dados['ZXZX'] || '';
-            templateData['underline_DDDD'] = dados['DDDD'] || '';
-            templateData['underline_DTIN'] = dados['DTIN'] || '';
-            templateData['underline_DTFI'] = dados['DTFI'] || '';
-            templateData['underline_BBBB'] = dados['BBBB'] || '';
-            templateData['underline_CCCC'] = dados['CCCC'] || '';
-            templateData['underline_XXYY'] = dados['XXYY'] || '';
+            console.log('Dados para template:', templateData);
             
             // Tentar renderizar
             try {
-                doc.render(templateData);
+                doc.setData(templateData);
+                doc.render();
             } catch (renderError) {
                 console.error('Erro ao renderizar documento:', renderError);
-                throw new Error('Erro na substituição dos dados');
+                console.error('Detalhes do erro:', renderError.message);
+                throw new Error('Erro na substituição dos dados: ' + renderError.message);
             }
             
             // Gerar o documento final
@@ -589,15 +575,18 @@ async function processarTemplateWordCorrigido(arrayBuffer, dados) {
             // Converter blob para arrayBuffer
             const reader = new FileReader();
             reader.onload = function() {
+                console.log('Documento processado com sucesso!');
                 resolve(reader.result);
             };
             reader.onerror = function(error) {
+                console.error('Erro na conversão:', error);
                 reject(new Error('Erro na conversão do documento'));
             };
             reader.readAsArrayBuffer(out);
             
         } catch (error) {
             console.error('Erro geral no processamento:', error);
+            console.error('Stack trace:', error.stack);
             reject(error);
         }
     });
