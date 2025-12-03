@@ -81,8 +81,10 @@ const CLIENTES = {
     }
 };
 
-// Dados para os Transformadores (ADICIONADO)
+// Dados para os Transformadores
 const PT_TRAFO = [112.5, 150, 225, 500, 750, 1000, 1250, 1500];
+// NOVO: Opções de Tensão do Trafo
+const TENSOES_TRAFO = ["220/127V", "380V/220V"]; 
 
 // Mapeamento dos meses em português
 const MESES_PT_BR = {
@@ -117,8 +119,8 @@ async function initApp() {
     // Preencher seletores
     populateSelectors();
     
-    // NOVO: Preencher seleções de potência do Trafo e configurar listener
-    populateTrafoPotencias();
+    // NOVO: Função que preenche Potências E Tensões dos Trafos
+    populateTrafoPotenciasAndTensoes();
     setupTrafoQuantityListener();
     
     // Verificar templates
@@ -128,12 +130,15 @@ async function initApp() {
     setupEventListeners();
 }
 
-// NOVO: Funções de Trafo
-function populateTrafoPotencias() {
+// ATUALIZADO: Função para popular Potências e TENSÕES
+function populateTrafoPotenciasAndTensoes() {
     const select1 = document.getElementById('potencia_trafo_1');
     const select2 = document.getElementById('potencia_trafo_2');
+    const tensao1 = document.getElementById('tensao_trafo_1');
+    const tensao2 = document.getElementById('tensao_trafo_2');
 
-    function addOptions(selectElement) {
+    // 1. Potências
+    function addPotenciaOptions(selectElement) {
         if (!selectElement) return;
         selectElement.innerHTML = '<option value="" disabled selected>Selecione a Potência (kVA)</option>';
         PT_TRAFO.forEach(potencia => {
@@ -143,9 +148,23 @@ function populateTrafoPotencias() {
             selectElement.appendChild(option);
         });
     }
+    
+    // 2. Tensões
+    function addTensaoOptions(selectElement) {
+        if (!selectElement) return;
+        selectElement.innerHTML = '<option value="" disabled selected>Selecione a Tensão</option>';
+        TENSOES_TRAFO.forEach(tensao => {
+            const option = document.createElement('option');
+            option.value = tensao;
+            option.textContent = tensao;
+            selectElement.appendChild(option);
+        });
+    }
 
-    addOptions(select1);
-    addOptions(select2);
+    addPotenciaOptions(select1);
+    addPotenciaOptions(select2);
+    addTensaoOptions(tensao1);
+    addTensaoOptions(tensao2);
 }
 
 function setupTrafoQuantityListener() {
@@ -158,7 +177,6 @@ function setupTrafoQuantityListener() {
     const tensao2 = document.getElementById('tensao_trafo_2');
 
     function toggleTrafo2(show) {
-        // Usa 'grid' para manter o estilo do form-grid, ou 'none'
         trafo2Fields.style.display = show ? 'grid' : 'none';
         
         // Define/remove a obrigatoriedade dos campos
@@ -168,11 +186,11 @@ function setupTrafoQuantityListener() {
         // Limpa os valores se for desativado
         if (!show) {
             if (potencia2) potencia2.value = '';
-            if (tensao2) tensao2.value = '';
+            if (tensao2) tensao2.value = ''; 
         }
     }
 
-    // Inicialização (garante que só 1 está visível por padrão)
+    // Inicialização 
     toggleTrafo2(quantitySelect.value === '2');
 
     quantitySelect.addEventListener('change', (event) => {
@@ -266,8 +284,8 @@ function setupEventListeners() {
         resetBtn.addEventListener('click', function() {
             if (form) form.reset();
             setupDefaultDates();
-            // Recarrega as opções de potência e listener
-            populateTrafoPotencias();
+            // Recarrega as opções de potência e tensão e listener
+            populateTrafoPotenciasAndTensoes();
             setupTrafoQuantityListener();
             const resultsSection = document.getElementById('results-section');
             if (resultsSection) resultsSection.classList.add('hidden');
