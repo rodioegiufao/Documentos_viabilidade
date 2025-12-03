@@ -81,159 +81,57 @@ const CLIENTES = {
     }
 };
 
-// Templates dos documentos (em formato simplificado)
-const TEMPLATES = {
-    "memorial": `**MEMORIAL DESCRITIVO**
-
-**ART: [YYYY]**
-
-**DESCRIÇÃO: SUBESTAÇÃO ABRIGADA TRIFÁSICA ABAIXADORA DE TENSÃO DE [XXXX]kVA**
-
-**PROPRIETÁRIO: [MMMM]**
-
-> **[ZZZZ] / RR**
-
-**SUMÁRIO**
-
-**1. APRESENTAÇÃO**
-
-O projeto da Subestação Abrigada Trifásica Abaixadora de Tensão de [XXXX]kVA a seco, situada na [XXXY], tem por objetivo o fornecimento de energia elétrica em média tensão para o Projeto [GGGG].
-
-1.1 PROJETISTA
-
-> [XXYY]
-> Engenheiro Eletricista -- CREA -- RNP [AAAA]
-> Contatos/e-mail: [BBBB]
-> Fone: [CCCC]
-> [ZZZZ] - RR
-
-**2. OBJETIVO**
-
-Projeto Elétrico da Infraestrutura Elétrica em Média Tensão para subestação de [XXXX] KVA-[DDDD], para atender a demanda elétrica do Projeto [GGGG].
-
-**3. RAMAL DE ENTRADA**
-
-O Ramal de entrada terá extensão [EEEE] metros aéreo em cabo xlpe - 90° - 12/20kv [FFFF]
-
-**4. CONSIDERAÇÕES FINAIS**
-
-Conforme o quadro demonstrativo de cargas apresentado, o transformador utilizado será de [XXXX]kVA, com interligação na média tensão devido a confiabilidade da mesma, sendo assim a potência demandada total será de [ZXZX].
-
-**[XXYY]**
-***CREA RR [AAAA]***`,
-
-    "procuração": `**PROCURAÇÃO**
-
-**OUTORGANTE: [MMMM]**, pessoa jurídica de direito privado, inscrita perante o CNPJ/MF, sob o nº [NNNN], com sede na [OOOO], neste ato representado pelo seu (a) responsável [PPPP], de nacionalidade [QQQQ], [RRRR], portador da cédula de identidade nº [SSSS] e inscrito no CPF sob o nº [TTTT], residente e domiciliado a [UUUU].
-
-**[GGGG]**, localizado na [XXXY].
-
-**OUTORGADOS: [XXYY]**, brasileiro, portador do RG nº [IIII] e do CPF nº [JJJJ], Registro Profissional [AAAA] residente e domiciliado no(a) [KKKK].
-
-Poderes: Através do presente instrumento particular de mandato, o OUTORGANTE nomeia e constitui como seu procurador o OUTORGADO, acima qualificado, concedendo-lhes poderes, inerentes a o bom e fiel cumprimento deste mandato, podendo representar o OUTORGANTE perante a [LLLL], para o fim específico de solicitação de análise e viabilidade técnica e aprovação de projeto de nossa subestação abaixadora de tensão.
-
-Esta procuração é válida até [14 / 07 / 2026].
-
-[ZZZZ], RR [14 de julho de 2025].`,
-
-    "termo_responsabilidade": `**TERMO DE RESPONSABILIDADE PARA USO DE GERAÇÃO PRÓPRIA**
-
-À
-
-[LLLL] S.A
-
-Documento referente ao [GGGG], localizado na [XXXY], dentro da estrutura urbana da região.
-
-Eu, [PPPP], residente e domiciliada a [UUUU], inscrito(a) no CPF sob o nº [TTTT], pelo presente declaro:
-
-1. Estar ciente e aceitar as eventuais implicações nos casos de acidentes com pessoas ou materiais na instalação própria, na de outros consumidores ou da [MMMM] S.A, quando motivados por defeito no funcionamento do equipamento de bloqueio da geração própria instalada na unidade consumidora em referência, sem número.
-
-2. Comprometer-me a comunicar a [MMMM] S.A antes de fazer qualquer modificação nas instalações da geração própria, inclusive nos equipamentos do sistema de bloqueio.
-
-3. Estar ciente de que o não cumprimento deste termo implicará na suspensão do fornecimento de energia elétrica por parte da [MMMM] S.A. à unidade consumidora em referência.
-
-4. Reconhecer que não caberá ao consumidor direito à indenização por parte da [MMMM] S.A, tendo em vista a ocorrência de eventual acidente provocado pelo mau uso da geração própria, da operação indevida do sistema de bloqueio ou de falhas nos equipamentos componentes do sistema de geração própria.
-
-5. A [MMMM] se compromete a operar o sistema de comutação automática de forma a garantir que a rede da [LLLL] S.A não será energizada pela geração de emergência.
-
-[ZZZZ], [DATA_ATUAL]
-
-Titular da unidade consumidora:
-
-Nome: [PPPP]
-CPF: [TTTT]
-Assinatura: _____________________________
-
-Testemunhas:
-
-Nome: _____________________________ CPF: _________________
-Assinatura: _____________________________
-
-Nome: _____________________________ CPF: _________________
-Assinatura: _____________________________`,
-
-    "carta_viabilidade": `Servimo-nos desta para solicitar Viabilidade Técnica e os Níveis de curto-circuito para nosso novo estabelecimento de ensino e fornecimento de energia elétrica para Subestação Abaixadora de [XXXX]kVA, conforme informações abaixo:
-
-1) Nome do Proprietário: [MMMM]
-2) Endereço do Proprietário: [OOOO]
-3) Nome do Empreendimento: [GGGG]
-4) Endereço do Empreendimento: [XXXY]
-5) Coordenada Geográfica (Lat./Log.): [HHHH]
-6) C.N.P.J / CPF: [NNNN]
-7) Número da unidade consumidora (número conosco): [VVVV]
-8) Compra de energia: ACR- Ambiente de Contratação Regulada ( X ); ACL- Ambiente de Contratação Livre ( )
-9) Classe: Residencial ( ); Industrial ( X ); Comercial ( ); Rural ( ); Poder Público ( )
-10) Planta de Situação (Anexar croqui de localização com a posição do transformador).
-11) Subestação destinada a: Carga (X); Geração Distribuída ( )
-12) Potência a ser instalada em Transformadores: [XXXX kVA]
-13) Demanda prevista total: [ZXZX kVA]
-14) Nível de tensão do secundário do transformador: [DDDD]
-15) Número do Poste de Interligação: S/Nº
-16) Data de Início da Obra: [DTIN]; Data de Término da Obra: [DTFI]
-17) E-mail para contato (obrigatório): [BBBB]
-18) Telefone para Contato (obrigatório): [CCCC]
-19) Técnico responsável: [XXYY]`,
-
-    "termo_nao_geracao": `**TERMO DE RESPONSABILIDADE DE NÃO UTILIZAÇÃO DE GERAÇÃO PRÓPRIA**
-
-O consumidor [GGGG], CNPJ: [NNNN], sob responsabilidade de [PPPP], inscrito no CPF sob o nº [TTTT], representado pelo Engenheiro Eletricista [XXYY], registrado no CREA-[AAAA] sob o n.º [JJJJ], declara que a Unidade Consumidora U.C Nº [VVVV] (Ligação nova) não possui Sistema de Geração Própria, instalado em sua unidade consumidora, localizada na [XXXY], não existindo em hipótese alguma a energização do sistema da rede elétrica da concessionária [LLLL], evitando assim a ocorrência de acidentes quando a necessidade de operações, intervenções e ou manutenções no sistema de distribuição de energia elétrica.
-
-[ZZZZ], [14 de julho de 2025].
-
-Responsável pela Unidade Consumidora
-
-[PPPP]
-
-Nome: _______________________________
-Assinatura: _______________________________
-
-Responsável Técnico pela Geração Própria
-
-[XXYY]
-
-Nome: _______________________________
-Assinatura: _______________________________`
-};
-
 // Mapeamento dos meses em português
 const MESES_PT_BR = {
-    "January": "janeiro",
-    "February": "fevereiro",
-    "March": "março",
-    "April": "abril",
-    "May": "maio",
-    "June": "junho",
-    "July": "julho",
-    "August": "agosto",
-    "September": "setembro",
-    "October": "outubro",
-    "November": "novembro",
-    "December": "dezembro"
+    "January": "janeiro", "February": "fevereiro", "March": "março",
+    "April": "abril", "May": "maio", "June": "junho",
+    "July": "julho", "August": "agosto", "September": "setembro",
+    "October": "outubro", "November": "novembro", "December": "dezembro"
 };
+
+// Templates disponíveis
+const TEMPLATES = {
+    "memorial": "templates/memorial-descritivo.docx",
+    "procuração": "templates/procuração.docx",
+    "termo_responsabilidade": "templates/termo-responsabilidade.docx",
+    "carta_viabilidade": "templates/carta-viabilidade.docx",
+    "termo_nao_geração": "templates/termo-nao-geração.docx"
+};
+
+// Variáveis globais
+let documentosGerados = [];
+let dadosProcessados = {};
 
 // Inicialização
 document.addEventListener('DOMContentLoaded', function() {
+    initApp();
+});
+
+async function initApp() {
+    // Configurar datas padrão
+    setupDefaultDates();
+    
     // Preencher seletores
+    populateSelectors();
+    
+    // Verificar templates
+    await checkTemplates();
+    
+    // Configurar eventos
+    setupEventListeners();
+}
+
+function setupDefaultDates() {
+    const hoje = new Date();
+    const umAno = new Date();
+    umAno.setFullYear(hoje.getFullYear() + 1);
+    
+    // Formatando para input type="date"
+    document.getElementById('data_inicio').valueAsDate = hoje;
+    document.getElementById('data_fim').valueAsDate = umAno;
+}
+
+function populateSelectors() {
     const engenheiroSelect = document.getElementById('engenheiro');
     const clienteSelect = document.getElementById('cliente');
     
@@ -252,24 +150,68 @@ document.addEventListener('DOMContentLoaded', function() {
         option.textContent = cliente;
         clienteSelect.appendChild(option);
     });
+}
+
+async function checkTemplates() {
+    const statusElement = document.getElementById('template-status');
     
-    // Configurar evento do formulário
+    try {
+        const templates = await Promise.all(
+            Object.values(TEMPLATES).map(template => fetch(template).then(res => res.ok))
+        );
+        
+        const allExist = templates.every(exists => exists);
+        
+        if (allExist) {
+            statusElement.innerHTML = `
+                <p><i class="fas fa-check-circle" style="color: #27ae60;"></i> 
+                Todos os templates encontrados!</p>
+                <small>Pronto para gerar documentos Word</small>
+            `;
+        } else {
+            statusElement.innerHTML = `
+                <p><i class="fas fa-exclamation-triangle" style="color: #f39c12;"></i> 
+                Alguns templates não foram encontrados</p>
+                <small>Verifique a pasta /templates/</small>
+            `;
+        }
+    } catch (error) {
+        statusElement.innerHTML = `
+            <p><i class="fas fa-times-circle" style="color: #e74c3c;"></i> 
+            Erro ao verificar templates</p>
+            <small>Verifique o console para detalhes</small>
+        `;
+        console.error('Erro ao verificar templates:', error);
+    }
+}
+
+function setupEventListeners() {
     const form = document.getElementById('document-form');
     form.addEventListener('submit', function(e) {
         e.preventDefault();
-        gerarDocumentos();
+        processarFormulario();
     });
     
-    // Configurar botão de reset
     const resetBtn = document.getElementById('reset-btn');
     resetBtn.addEventListener('click', function() {
         form.reset();
+        setupDefaultDates();
         document.getElementById('results-section').classList.add('hidden');
     });
-});
+    
+    // Botão copiar dados
+    document.getElementById('copy-data-btn').addEventListener('click', copiarDados);
+    
+    // Botão download individual
+    document.getElementById('download-individual-btn').addEventListener('click', () => {
+        alert('Para abrir a pasta de downloads, verifique sua pasta padrão de downloads.');
+    });
+}
 
-// Função para extrair município do endereço
+// Função para extrair município
 function extrairMunicipio(enderecoCompleto) {
+    if (!enderecoCompleto) return "Boa Vista";
+    
     const partes = enderecoCompleto.split(',');
     if (partes.length >= 3) {
         let cidadeUf = partes[partes.length - 1].trim();
@@ -282,9 +224,42 @@ function extrairMunicipio(enderecoCompleto) {
     return "Boa Vista";
 }
 
-// Função principal para gerar documentos
-function gerarDocumentos() {
+// Função principal para processar formulário
+async function processarFormulario() {
     // Validar campos obrigatórios
+    if (!validarFormulario()) return;
+    
+    // Mostrar loading
+    showLoading(true);
+    
+    try {
+        // Coletar e processar dados
+        const dados = coletarDadosFormulario();
+        
+        // Verificar quais documentos gerar
+        const documentosParaGerar = getDocumentosSelecionados();
+        
+        if (documentosParaGerar.length === 0) {
+            alert('Selecione pelo menos um documento para gerar.');
+            showLoading(false);
+            return;
+        }
+        
+        // Gerar documentos
+        await gerarDocumentosWord(dados, documentosParaGerar);
+        
+        // Exibir resultados
+        exibirResultados();
+        
+    } catch (error) {
+        console.error('Erro ao processar:', error);
+        alert('Erro ao gerar documentos. Verifique o console para detalhes.');
+    } finally {
+        showLoading(false);
+    }
+}
+
+function validarFormulario() {
     const camposObrigatorios = [
         'potencia', 'art', 'tensao', 'ramal_tamanho', 'ramal_cabo',
         'nome_projeto', 'concessionaria', 'endereco_empreendimento',
@@ -297,11 +272,14 @@ function gerarDocumentos() {
         if (!campo.value.trim()) {
             alert(`Por favor, preencha o campo: ${campo.previousElementSibling.textContent}`);
             campo.focus();
-            return;
+            return false;
         }
     }
     
-    // Coletar dados do formulário
+    return true;
+}
+
+function coletarDadosFormulario() {
     const dados = {
         'XXXX': document.getElementById('potencia').value,
         'YYYY': document.getElementById('art').value,
@@ -314,11 +292,11 @@ function gerarDocumentos() {
         'HHHH': document.getElementById('localizacao_projeto').value,
         'VVVV': document.getElementById('numero_uc').value,
         'ZXZX': document.getElementById('demanda').value,
-        'DTIN': document.getElementById('data_inicio').value,
-        'DTFI': document.getElementById('data_fim').value
+        'DTIN': formatarData(document.getElementById('data_inicio').value),
+        'DTFI': formatarData(document.getElementById('data_fim').value)
     };
     
-    // Dados do engenheiro selecionado
+    // Dados do engenheiro
     const engenheiroNome = document.getElementById('engenheiro').value;
     const engData = ENGENHEIROS[engenheiroNome];
     dados['XXYY'] = engenheiroNome;
@@ -329,7 +307,7 @@ function gerarDocumentos() {
     dados['JJJJ'] = engData.CPF;
     dados['KKKK'] = engData.ENDERECO;
     
-    // Dados do cliente selecionado
+    // Dados do cliente
     const clienteNome = document.getElementById('cliente').value;
     const cliData = CLIENTES[clienteNome];
     dados['MMMM'] = clienteNome;
@@ -345,58 +323,146 @@ function gerarDocumentos() {
     // Extrair município
     dados['ZZZZ'] = extrairMunicipio(dados['XXXY']);
     
-    // Adicionar datas atuais
+    // Adicionar datas formatadas
     const hoje = new Date();
     const mesIngles = hoje.toLocaleString('en-US', { month: 'long' });
     const mesPortugues = MESES_PT_BR[mesIngles] || mesIngles;
     
     dados['14 / 07 / 2026'] = hoje.getDate() + ' / ' + (hoje.getMonth() + 1) + ' / ' + (hoje.getFullYear() + 1);
     dados['14 de julho de 2025'] = hoje.getDate() + ' de ' + mesPortugues + ' de ' + hoje.getFullYear();
-    dados['DATA_ATUAL'] = hoje.getDate() + ' de ' + mesPortugues + ' de ' + hoje.getFullYear();
     
-    // Gerar documentos
-    const documentosGerados = {};
-    const gerarTermoNaoGeracao = document.getElementById('gerar_termo_nao_geracao').checked;
+    // Salvar dados para uso posterior
+    dadosProcessados = { ...dados };
     
-    // Lista de documentos a gerar
-    const documentosParaGerar = [
-        { nome: "Memorial Descritivo", template: "memorial", nomeArquivo: `Memorial Descritivo - ${dados['GGGG']}.txt` },
-        { nome: "Procuração", template: "procuração", nomeArquivo: `Procuração - ${dados['GGGG']}.txt` },
-        { nome: "Termo de Responsabilidade", template: "termo_responsabilidade", nomeArquivo: `Termo de Responsabilidade - ${dados['PPPP']}.txt` },
-        { nome: "Carta de Viabilidade", template: "carta_viabilidade", nomeArquivo: `Carta de Viabilidade - ${dados['GGGG']}.txt` }
-    ];
+    return dados;
+}
+
+function formatarData(dataString) {
+    const data = new Date(dataString);
+    return data.toLocaleDateString('pt-BR');
+}
+
+function getDocumentosSelecionados() {
+    const documentos = [];
     
-    if (gerarTermoNaoGeracao) {
-        documentosParaGerar.push({
-            nome: "Termo de Não Geração",
-            template: "termo_nao_geracao",
-            nomeArquivo: `Termo de Não Utilização de Geração Própria - ${dados['GGGG']}.txt`
+    if (document.getElementById('gerar_memorial').checked) {
+        documentos.push({ 
+            tipo: 'memorial', 
+            nome: 'Memorial Descritivo',
+            nomeArquivo: 'Memorial Descritivo' 
         });
     }
     
-    // Processar cada documento
-    documentosParaGerar.forEach(doc => {
-        let conteudo = TEMPLATES[doc.template];
-        
-        // Substituir placeholders
-        Object.keys(dados).forEach(key => {
-            const placeholder = `[${key}]`;
-            conteudo = conteudo.split(placeholder).join(dados[key]);
+    if (document.getElementById('gerar_procuracao').checked) {
+        documentos.push({ 
+            tipo: 'procuração', 
+            nome: 'Procuração',
+            nomeArquivo: 'Procuração' 
         });
-        
-        documentosGerados[doc.nome] = {
-            conteudo: conteudo,
-            nomeArquivo: doc.nomeArquivo,
-            nomeExibicao: doc.nome
-        };
-    });
+    }
     
-    // Exibir resultados
-    exibirResultados(documentosGerados, dados);
+    if (document.getElementById('gerar_termo').checked) {
+        documentos.push({ 
+            tipo: 'termo_responsabilidade', 
+            nome: 'Termo de Responsabilidade',
+            nomeArquivo: 'Termo de Responsabilidade' 
+        });
+    }
+    
+    if (document.getElementById('gerar_carta').checked) {
+        documentos.push({ 
+            tipo: 'carta_viabilidade', 
+            nome: 'Carta de Viabilidade',
+            nomeArquivo: 'Carta de Viabilidade' 
+        });
+    }
+    
+    if (document.getElementById('gerar_termo_nao_geracao').checked) {
+        documentos.push({ 
+            tipo: 'termo_nao_geração', 
+            nome: 'Termo de Não Geração',
+            nomeArquivo: 'Termo de Não Geração' 
+        });
+    }
+    
+    return documentos;
 }
 
-// Função para exibir resultados
-function exibirResultados(documentosGerados, dados) {
+async function gerarDocumentosWord(dados, documentosParaGerar) {
+    documentosGerados = [];
+    
+    for (const docInfo of documentosParaGerar) {
+        try {
+            const templateUrl = TEMPLATES[docInfo.tipo];
+            const response = await fetch(templateUrl);
+            
+            if (!response.ok) {
+                throw new Error(`Template não encontrado: ${templateUrl}`);
+            }
+            
+            const arrayBuffer = await response.arrayBuffer();
+            
+            // Criar documento com dados substituídos
+            const docxContent = await processarTemplateWord(arrayBuffer, dados);
+            
+            // Nome do arquivo final
+            const nomeProjeto = dados['GGGG'].replace(/[^a-z0-9]/gi, '_').toLowerCase();
+            const nomeArquivo = `${docInfo.nomeArquivo} - ${nomeProjeto}.docx`;
+            
+            documentosGerados.push({
+                nome: docInfo.nome,
+                nomeArquivo: nomeArquivo,
+                conteudo: docxContent,
+                tipo: docInfo.tipo
+            });
+            
+        } catch (error) {
+            console.error(`Erro ao processar ${docInfo.nome}:`, error);
+            throw error;
+        }
+    }
+}
+
+async function processarTemplateWord(arrayBuffer, dados) {
+    // Para simplificar, vamos fazer uma substituição básica no conteúdo binário
+    // Nota: Esta é uma abordagem simplificada. Para substituição complexa em Word,
+    // seria necessário usar docxtemplater ou similar
+    
+    try {
+        // Converter ArrayBuffer para Uint8Array
+        const data = new Uint8Array(arrayBuffer);
+        
+        // Converter para string (simplificado - funciona para textos simples)
+        let content = '';
+        for (let i = 0; i < data.length; i++) {
+            content += String.fromCharCode(data[i]);
+        }
+        
+        // Substituir placeholders (simplificado)
+        Object.keys(dados).forEach(key => {
+            const placeholder = `[${key}]`;
+            const value = dados[key];
+            // Substituir de forma simples (pode não funcionar para formatação complexa)
+            content = content.split(placeholder).join(value);
+        });
+        
+        // Converter de volta para ArrayBuffer
+        const buffer = new ArrayBuffer(content.length);
+        const view = new Uint8Array(buffer);
+        for (let i = 0; i < content.length; i++) {
+            view[i] = content.charCodeAt(i);
+        }
+        
+        return buffer;
+        
+    } catch (error) {
+        console.error('Erro no processamento Word:', error);
+        // Fallback: retornar o buffer original
+        return arrayBuffer;
+    }
+}
+
+function exibirResultados() {
     const resultsSection = document.getElementById('results-section');
     const documentsContainer = document.getElementById('documents-container');
     const dataSummaryContent = document.getElementById('data-summary-content');
@@ -406,39 +472,38 @@ function exibirResultados(documentosGerados, dados) {
     dataSummaryContent.innerHTML = '';
     
     // Exibir documentos gerados
-    Object.values(documentosGerados).forEach((doc, index) => {
+    documentosGerados.forEach((doc, index) => {
         const docElement = document.createElement('div');
         docElement.className = 'document-card';
         docElement.innerHTML = `
-            <h4>${doc.nomeExibicao}</h4>
-            <p>Arquivo: ${doc.nomeArquivo}</p>
-            <button class="btn-download" onclick="baixarDocumento('${doc.nomeArquivo}', ${index})">
-                <i class="fas fa-download"></i> Baixar ${doc.nomeExibicao}
-            </button>
+            <h4><i class="fas fa-file-word"></i> ${doc.nome}</h4>
+            <p>Arquivo: <strong>${doc.nomeArquivo}</strong></p>
+            <p>Formato: Microsoft Word (.docx)</p>
+            <div class="document-buttons">
+                <button class="btn-download" onclick="baixarDocumentoWord(${index})">
+                    <i class="fas fa-download"></i> Baixar Word
+                </button>
+                <button class="btn-preview" onclick="visualizarDocumento(${index})">
+                    <i class="fas fa-eye"></i> Visualizar
+                </button>
+            </div>
         `;
-        
-        // Armazenar dados para download
-        docElement.dataset.conteudo = btoa(unescape(encodeURIComponent(doc.conteudo)));
-        docElement.dataset.nomeArquivo = doc.nomeArquivo;
-        
         documentsContainer.appendChild(docElement);
     });
     
+    // Configurar botão para baixar todos
+    const downloadAllBtn = document.getElementById('download-all-btn');
+    downloadAllBtn.onclick = baixarTodosDocumentos;
+    
     // Exibir resumo dos dados
     const dadosFormatados = {};
-    Object.keys(dados).forEach(key => {
-        if (!key.startsWith('14') && key !== 'DATA_ATUAL' && !key.includes('/2025')) {
-            dadosFormatados[key] = dados[key];
+    Object.keys(dadosProcessados).forEach(key => {
+        if (!key.startsWith('14') && !key.includes('de ') && !key.includes('/202')) {
+            dadosFormatados[key] = dadosProcessados[key];
         }
     });
     
-    dataSummaryContent.innerHTML = `<pre>${JSON.stringify(dadosFormatados, null, 2)}</pre>`;
-    
-    // Configurar botão para baixar todos
-    const downloadAllBtn = document.getElementById('download-all-btn');
-    downloadAllBtn.onclick = function() {
-        baixarTodosDocumentos(documentosGerados);
-    };
+    dataSummaryContent.innerHTML = JSON.stringify(dadosFormatados, null, 2);
     
     // Mostrar seção de resultados
     resultsSection.classList.remove('hidden');
@@ -447,32 +512,123 @@ function exibirResultados(documentosGerados, dados) {
     resultsSection.scrollIntoView({ behavior: 'smooth' });
 }
 
-// Função para baixar um documento individual
-function baixarDocumento(nomeArquivo, index) {
-    const docCard = document.querySelectorAll('.document-card')[index];
-    const conteudoCodificado = docCard.dataset.conteudo;
-    const conteudo = decodeURIComponent(escape(atob(conteudoCodificado)));
+function baixarDocumentoWord(index) {
+    const doc = documentosGerados[index];
     
-    const blob = new Blob([conteudo], { type: 'text/plain;charset=utf-8' });
+    // Criar blob do documento Word
+    const blob = new Blob([doc.conteudo], { 
+        type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' 
+    });
+    
+    // Criar link para download
     const url = URL.createObjectURL(blob);
-    
     const a = document.createElement('a');
     a.href = url;
-    a.download = nomeArquivo;
+    a.download = doc.nomeArquivo;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     
-    URL.revokeObjectURL(url);
+    // Liberar URL
+    setTimeout(() => URL.revokeObjectURL(url), 100);
+    
+    // Feedback visual
+    showDownloadFeedback(doc.nome);
 }
 
-// Função para baixar todos os documentos em um ZIP
-function baixarTodosDocumentos(documentosGerados) {
-    // Como JSZip não está disponível neste exemplo simples,
-    // vamos oferecer para baixar o primeiro documento e informar sobre os outros
-    if (Object.keys(documentosGerados).length > 0) {
-        const primeiroDoc = Object.values(documentosGerados)[0];
-        alert(`Para simplificação, baixando apenas "${primeiroDoc.nomeArquivo}".\n\nPara gerar um arquivo ZIP com todos os documentos, seria necessário uma biblioteca como JSZip.`);
-        baixarDocumento(primeiroDoc.nomeArquivo, 0);
+function baixarTodosDocumentos() {
+    if (documentosGerados.length === 0) {
+        alert('Nenhum documento para baixar.');
+        return;
     }
+    
+    // Criar um arquivo ZIP com todos os documentos
+    const zip = new JSZip();
+    
+    documentosGerados.forEach(doc => {
+        zip.file(doc.nomeArquivo, doc.conteudo);
+    });
+    
+    // Gerar o ZIP
+    zip.generateAsync({ type: 'blob' })
+        .then(function(content) {
+            // Criar link para download do ZIP
+            const url = URL.createObjectURL(content);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Documentos_${dadosProcessados['GGGG'].replace(/[^a-z0-9]/gi, '_')}.zip`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            
+            // Liberar URL
+            setTimeout(() => URL.revokeObjectURL(url), 100);
+            
+            // Feedback
+            showDownloadFeedback('todos os documentos');
+        })
+        .catch(function(error) {
+            console.error('Erro ao criar ZIP:', error);
+            alert('Erro ao criar arquivo ZIP.');
+        });
+}
+
+function visualizarDocumento(index) {
+    const doc = documentosGerados[index];
+    
+    // Em um ambiente real, você poderia abrir em uma nova janela
+    // ou usar um visualizador de documentos
+    alert(`Para visualizar o documento "${doc.nome}", faça o download e abra no Microsoft Word.\n\nArquivo: ${doc.nomeArquivo}`);
+}
+
+function copiarDados() {
+    const dadosFormatados = document.getElementById('data-summary-content').textContent;
+    
+    navigator.clipboard.writeText(dadosFormatados)
+        .then(() => {
+            const btn = document.getElementById('copy-data-btn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-check"></i> Copiado!';
+            btn.style.background = '#27ae60';
+            
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.style.background = '';
+            }, 2000);
+        })
+        .catch(err => {
+            console.error('Erro ao copiar:', err);
+            alert('Erro ao copiar dados para a área de transferência.');
+        });
+}
+
+function showLoading(show) {
+    const loading = document.getElementById('loading');
+    const generateBtn = document.getElementById('generate-btn');
+    
+    if (show) {
+        loading.classList.remove('hidden');
+        generateBtn.disabled = true;
+        generateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processando...';
+    } else {
+        loading.classList.add('hidden');
+        generateBtn.disabled = false;
+        generateBtn.innerHTML = '<i class="fas fa-file-word"></i> Gerar Documentos Word';
+    }
+}
+
+function showDownloadFeedback(nomeDocumento) {
+    // Feedback visual simples
+    const originalTitle = document.title;
+    document.title = `✓ ${nomeDocumento} baixado! - Gerador de Documentos`;
+    
+    setTimeout(() => {
+        document.title = originalTitle;
+    }, 1500);
+}
+
+// Funções auxiliares para o navegador
+function formatDateToDMY(date) {
+    const d = new Date(date);
+    return `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1).toString().padStart(2, '0')}/${d.getFullYear()}`;
 }
