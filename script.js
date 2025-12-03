@@ -81,7 +81,7 @@ const CLIENTES = {
     }
 };
 
-// NOVO: Dados para os Transformadores
+// Dados para os Transformadores
 const PT_TRAFO = [112.5, 150, 225, 500, 750, 1000, 1250, 1500];
 
 // Mapeamento dos meses em português
@@ -161,13 +161,14 @@ function setupTrafoQuantityListener() {
         trafo2Fields.style.display = show ? 'grid' : 'none';
         
         // Define/remove a obrigatoriedade dos campos
-        potencia2.required = show;
-        tensao2.required = show;
+        // Garante que só define 'required' se o campo realmente existir
+        if (potencia2) potencia2.required = show;
+        if (tensao2) tensao2.required = show;
         
         // Limpa os valores se for desativado
         if (!show) {
-            potencia2.value = '';
-            tensao2.value = '';
+            if (potencia2) potencia2.value = '';
+            if (tensao2) tensao2.value = '';
         }
     }
 
@@ -185,8 +186,11 @@ function setupDefaultDates() {
     umAno.setFullYear(hoje.getFullYear() + 1);
     
     // Formatando para input type="date"
-    document.getElementById('data_inicio').valueAsDate = hoje;
-    document.getElementById('data_fim').valueAsDate = umAno;
+    const dataInicio = document.getElementById('data_inicio');
+    const dataFim = document.getElementById('data_fim');
+    
+    if (dataInicio) dataInicio.valueAsDate = hoje;
+    if (dataFim) dataFim.valueAsDate = umAno;
 }
 
 function populateSelectors() {
@@ -194,25 +198,31 @@ function populateSelectors() {
     const clienteSelect = document.getElementById('cliente');
     
     // Adicionar opções de engenheiros
-    Object.keys(ENGENHEIROS).forEach(eng => {
-        const option = document.createElement('option');
-        option.value = eng;
-        option.textContent = eng;
-        engenheiroSelect.appendChild(option);
-    });
+    if (engenheiroSelect) {
+        Object.keys(ENGENHEIROS).forEach(eng => {
+            const option = document.createElement('option');
+            option.value = eng;
+            option.textContent = eng;
+            engenheiroSelect.appendChild(option);
+        });
+    }
     
     // Adicionar opções de clientes
-    Object.keys(CLIENTES).forEach(cliente => {
-        const option = document.createElement('option');
-        option.value = cliente;
-        option.textContent = cliente;
-        clienteSelect.appendChild(option);
-    });
+    if (clienteSelect) {
+        Object.keys(CLIENTES).forEach(cliente => {
+            const option = document.createElement('option');
+            option.value = cliente;
+            option.textContent = cliente;
+            clienteSelect.appendChild(option);
+        });
+    }
 }
 
 async function checkTemplates() {
     const statusElement = document.getElementById('template-status');
+    if (!statusElement) return;
     
+    // Restante da função checkTemplates (sem alterações)
     try {
         const templates = await Promise.all(
             Object.values(TEMPLATES).map(template => fetch(template).then(res => res.ok))
@@ -245,28 +255,35 @@ async function checkTemplates() {
 
 function setupEventListeners() {
     const form = document.getElementById('document-form');
-    form.addEventListener('submit', function(e) {
-        e.preventDefault();
-        processarFormulario();
-    });
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            processarFormulario();
+        });
+    }
     
     const resetBtn = document.getElementById('reset-btn');
-    resetBtn.addEventListener('click', function() {
-        form.reset();
-        setupDefaultDates();
-        // NOVO: Recarrega as opções de potência e listener
-        populateTrafoPotencias();
-        setupTrafoQuantityListener();
-        document.getElementById('results-section').classList.add('hidden');
-    });
+    if (resetBtn) {
+        resetBtn.addEventListener('click', function() {
+            if (form) form.reset();
+            setupDefaultDates();
+            // Recarrega as opções de potência e listener
+            populateTrafoPotencias();
+            setupTrafoQuantityListener();
+            const resultsSection = document.getElementById('results-section');
+            if (resultsSection) resultsSection.classList.add('hidden');
+        });
+    }
     
-    // Botão copiar dados
-    document.getElementById('copy-data-btn').addEventListener('click', copiarDados);
+    const copyBtn = document.getElementById('copy-data-btn');
+    if (copyBtn) copyBtn.addEventListener('click', copiarDados);
     
-    // Botão download individual
-    document.getElementById('download-individual-btn').addEventListener('click', () => {
-        alert('Para abrir a pasta de downloads, verifique sua pasta padrão de downloads.');
-    });
+    const downloadIndividualBtn = document.getElementById('download-individual-btn');
+    if (downloadIndividualBtn) {
+        downloadIndividualBtn.addEventListener('click', () => {
+            alert('Para abrir a pasta de downloads, verifique sua pasta padrão de downloads.');
+        });
+    }
 }
 
 // Função para extrair município
@@ -321,24 +338,24 @@ async function processarFormulario() {
 }
 
 function validarFormulario() {
-    // Lista de campos obrigatórios (atualizada para novos IDs)
+    // ATUALIZADO: Apenas POTÊNCIA e TENSÃO, removendo ART e Ramais
     const camposObrigatorios = [
-        'potencia_trafo_1', 'tensao_trafo_1', 'carga_instalada', // Novos/Atualizados
-        'art', 'ramal_tamanho', 'ramal_cabo',
-        'nome_projeto', 'concessionaria', 'endereco_empreendimento',
+        'potencia', 'tensao', // Dados do Projeto
+        'potencia_trafo_1', 'tensao_trafo_1', 'carga_instalada', // Informações da Subestação
+        'nome_projeto', 'concessionaria', 'endereco_empreendimento', // Informações Gerais
         'localizacao_projeto', 'numero_uc', 'demanda', 'data_inicio', 'data_fim',
         'engenheiro', 'cliente'
     ];
     
     // Adiciona Trafo 2 condicionalmente
-    if (document.getElementById('quantidade_trafos').value === '2') {
+    const qtdTrafosElement = document.getElementById('quantidade_trafos');
+    if (qtdTrafosElement && qtdTrafosElement.value === '2') {
         camposObrigatorios.push('potencia_trafo_2', 'tensao_trafo_2');
     }
     
     for (const campoId of camposObrigatorios) {
         const campo = document.getElementById(campoId);
         if (!campo || !campo.value.trim()) {
-            // Tenta obter o label para um alerta mais amigável
             const labelText = campo ? (campo.previousElementSibling ? campo.previousElementSibling.textContent.replace('*', '').trim() : campoId) : campoId;
             alert(`Por favor, preencha o campo obrigatório: ${labelText}`);
             if (campo) campo.focus();
@@ -350,7 +367,11 @@ function validarFormulario() {
 }
 
 function coletarDadosFormulario() {
-    // NOVO: Captura dos campos da subestação
+    // Dados do Projeto (Antigos)
+    const potenciaProjeto = document.getElementById('potencia').value;
+    const tensaoProjeto = document.getElementById('tensao').value;
+    
+    // Dados de Informações da Subestação (Novos)
     const potencia1 = document.getElementById('potencia_trafo_1').value;
     const tensao1 = document.getElementById('tensao_trafo_1').value;
     const qtdTrafos = document.getElementById('quantidade_trafos').value;
@@ -359,45 +380,47 @@ function coletarDadosFormulario() {
 
     let potencia2 = '';
     let tensao2 = '';
-    let potenciaTotal = parseFloat(potencia1);
+    let potenciaTotalCalculada = parseFloat(potencia1);
 
     if (qtdTrafos === '2') {
         potencia2 = document.getElementById('potencia_trafo_2').value;
         tensao2 = document.getElementById('tensao_trafo_2').value;
         if (potencia2) {
-            potenciaTotal += parseFloat(potencia2);
+            potenciaTotalCalculada += parseFloat(potencia2);
         }
     }
 
-    // Mapeamento dos placeholders
+    // Mapeamento final dos placeholders
     const dados = {
-        // NOVOS PLACEHOLDERS SOLICITADOS
+        // PLACEHOLDERS DO PROJETO (Manuais, tomam precedência)
+        'XXXX': potenciaProjeto, // Potência da Subestação em kVA
+        'DDDD': tensaoProjeto,   // Tensão Geral
+        
+        // PLACEHOLDERS DA SUBESTAÇÃO (Detalhes)
         'PTF1': potencia1, // Potência do Trafo 1
         'TTF1': tensao1,   // Tensão do Trafo 1
         'PTF2': potencia2 || 'N/A', // Potência do Trafo 2 (ou N/A)
         'TTF2': tensao2 || 'N/A',   // Tensão do Trafo 2 (ou N/A)
-        'TIPO_TRAFO': tipoTrafo, // NOVO PLACEHOLDER SUGERIDO
-        'ZXXZ': cargaInstalada, // Placeholder para Carga Instalada
+        'TIPO_TRAFO': tipoTrafo, // Tipo do Trafo
+        'ZXXZ': cargaInstalada, // Carga Instalada
 
-        // PLACEHOLDERS EXISTENTES (Atualizados com a nova lógica)
-        'XXXX': potenciaTotal.toString(), // Potência Total (soma Trafo 1 e 2)
-        'DDDD': tensao1, // Tensão Geral (usando Trafo 1 como referência)
-        'ZXZX': document.getElementById('demanda').value, // Demanda (Mantido)
-        
-        // PLACEHOLDERS EXISTENTES (Mantidos)
-        'YYYY': document.getElementById('art').value,
-        'EEEE': document.getElementById('ramal_tamanho').value,
-        'FFFF': document.getElementById('ramal_cabo').value,
+        // PLACEHOLDERS EXISTENTES (Outros)
+        // YYYY, EEEE, FFFF removidos daqui
+        'YYYY': '', // Se necessário, defina como vazio para não quebrar templates
+        'EEEE': '',
+        'FFFF': '',
+
         'GGGG': document.getElementById('nome_projeto').value,
         'LLLL': document.getElementById('concessionaria').value,
         'XXXY': document.getElementById('endereco_empreendimento').value,
         'HHHH': document.getElementById('localizacao_projeto').value,
         'VVVV': document.getElementById('numero_uc').value,
+        'ZXZX': document.getElementById('demanda').value, // Demanda
         'DTIN': formatarData(document.getElementById('data_inicio').value),
         'DTFI': formatarData(document.getElementById('data_fim').value),
         
         // Dados do engenheiro
-        // ... (resto do código de Engenheiro, Cliente e Datas)
+        // ... (código existente)
     };
     
     // Dados do engenheiro
@@ -434,19 +457,14 @@ function coletarDadosFormulario() {
     const diaFormatado = hoje.getDate().toString().padStart(2, '0');
     
     // 2. Obter e formatar o mês (com zero à esquerda)
-    // O mês é base 0, então somamos 1 antes de formatar.
     const mesFormatado = (hoje.getMonth() + 1).toString().padStart(2, '0');
     
-    // 3. Obter o nome do mês em português (reutilizando sua lógica)
+    // 3. Obter o nome do mês em português
     const mesIngles = hoje.toLocaleString('en-US', { month: 'long' });
-    // Certifique-se de que a variável global MESES_PT_BR está definida!
     const mesPortugues = MESES_PT_BR[mesIngles] || mesIngles;
     
     // 4. Aplicar nos dados
-    // Chave: '14 / 07 / 2026' (Usado como placeholder para data futura)
     dados['14 / 07 / 2026'] = `${diaFormatado} / ${mesFormatado} / ${hoje.getFullYear() + 1}`;
-    
-    // Chave: '14 de julho de 2025' (Usado como placeholder para data por extenso)
     dados['14 de julho de 2025'] = `${diaFormatado} de ${mesPortugues} de ${hoje.getFullYear()}`;
     
     // Salvar dados para uso posterior
