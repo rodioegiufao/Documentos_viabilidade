@@ -360,11 +360,11 @@ function validarFormulario() {
     // Campos ORIGINAIS (Dados do Projeto)
     const camposObrigatorios = [
         'potencia', 'art', 'tensao', 'ramal_tamanho', 'ramal_cabo',
-        // NOVOS campos da Subestação
-        'potencia_trafo_1', 'tensao_trafo_1', 'carga_instalada', 'tipo_trafo',
+        // NOVOS campos da Subestação (carga_instalada MOVIDA, mas ainda validada aqui)
+        'potencia_trafo_1', 'tensao_trafo_1', 'tipo_trafo',
         // Demais campos
         'nome_projeto', 'concessionaria', 'endereco_empreendimento',
-        'localizacao_projeto', 'numero_uc', 'demanda', 'data_inicio', 'data_fim',
+        'localizacao_projeto', 'numero_uc', 'demanda', 'carga_instalada', 'data_inicio', 'data_fim', // 'carga_instalada' movida, mas o ID permanece
         'engenheiro', 'cliente'
     ];
     
@@ -422,7 +422,7 @@ function coletarDadosFormulario() {
         'PTF2': potencia2 || 'N/A', // Potência do Trafo 2 (ou N/A)
         'TTF2': tensao2 || 'N/A',   // Tensão do Trafo 2 (ou N/A)
         'TIPO_TRAFO': tipoTrafo, // Tipo do Trafo
-        'ZXXZ': cargaInstalada, // Carga Instalada
+        'ZXXZ': cargaInstalada, // Carga Instalada (ID mantido, apenas posição no HTML mudou)
         
         // PLACEHOLDERS EXISTENTES (Outros)
         'GGGG': document.getElementById('nome_projeto').value,
