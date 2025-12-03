@@ -81,6 +81,9 @@ const CLIENTES = {
     }
 };
 
+// NOVO: Dados para os Transformadores
+const PT_TRAFO = [112.5, 150, 225, 500, 750, 1000, 1250, 1500];
+
 // Mapeamento dos meses em português
 const MESES_PT_BR = {
     "January": "janeiro", "February": "fevereiro", "March": "março",
@@ -114,11 +117,66 @@ async function initApp() {
     // Preencher seletores
     populateSelectors();
     
+    // NOVO: Preencher seleções de potência do Trafo e configurar listener
+    populateTrafoPotencias();
+    setupTrafoQuantityListener();
+    
     // Verificar templates
     await checkTemplates();
     
     // Configurar eventos
     setupEventListeners();
+}
+
+function populateTrafoPotencias() {
+    const select1 = document.getElementById('potencia_trafo_1');
+    const select2 = document.getElementById('potencia_trafo_2');
+
+    function addOptions(selectElement) {
+        if (!selectElement) return;
+        selectElement.innerHTML = '<option value="" disabled selected>Selecione a Potência (kVA)</option>';
+        PT_TRAFO.forEach(potencia => {
+            const option = document.createElement('option');
+            option.value = potencia;
+            option.textContent = `${potencia} kVA`;
+            selectElement.appendChild(option);
+        });
+    }
+
+    addOptions(select1);
+    addOptions(select2);
+}
+
+function setupTrafoQuantityListener() {
+    const quantitySelect = document.getElementById('quantidade_trafos');
+    const trafo2Fields = document.getElementById('trafo_2_fields');
+    
+    if (!quantitySelect || !trafo2Fields) return;
+    
+    const potencia2 = document.getElementById('potencia_trafo_2');
+    const tensao2 = document.getElementById('tensao_trafo_2');
+
+    function toggleTrafo2(show) {
+        // Usa 'grid' para manter o estilo do form-grid, ou 'none'
+        trafo2Fields.style.display = show ? 'grid' : 'none';
+        
+        // Define/remove a obrigatoriedade dos campos
+        potencia2.required = show;
+        tensao2.required = show;
+        
+        // Limpa os valores se for desativado
+        if (!show) {
+            potencia2.value = '';
+            tensao2.value = '';
+        }
+    }
+
+    // Inicialização (garante que só 1 está visível por padrão)
+    toggleTrafo2(quantitySelect.value === '2');
+
+    quantitySelect.addEventListener('change', (event) => {
+        toggleTrafo2(event.target.value === '2');
+    });
 }
 
 function setupDefaultDates() {
@@ -196,6 +254,9 @@ function setupEventListeners() {
     resetBtn.addEventListener('click', function() {
         form.reset();
         setupDefaultDates();
+        // NOVO: Recarrega as opções de potência e listener
+        populateTrafoPotencias();
+        setupTrafoQuantityListener();
         document.getElementById('results-section').classList.add('hidden');
     });
     
@@ -260,18 +321,27 @@ async function processarFormulario() {
 }
 
 function validarFormulario() {
+    // Lista de campos obrigatórios (atualizada para novos IDs)
     const camposObrigatorios = [
-        'potencia', 'art', 'tensao', 'ramal_tamanho', 'ramal_cabo',
+        'potencia_trafo_1', 'tensao_trafo_1', 'carga_instalada', // Novos/Atualizados
+        'art', 'ramal_tamanho', 'ramal_cabo',
         'nome_projeto', 'concessionaria', 'endereco_empreendimento',
         'localizacao_projeto', 'numero_uc', 'demanda', 'data_inicio', 'data_fim',
         'engenheiro', 'cliente'
     ];
     
+    // Adiciona Trafo 2 condicionalmente
+    if (document.getElementById('quantidade_trafos').value === '2') {
+        camposObrigatorios.push('potencia_trafo_2', 'tensao_trafo_2');
+    }
+    
     for (const campoId of camposObrigatorios) {
         const campo = document.getElementById(campoId);
-        if (!campo.value.trim()) {
-            alert(`Por favor, preencha o campo: ${campo.previousElementSibling.textContent}`);
-            campo.focus();
+        if (!campo || !campo.value.trim()) {
+            // Tenta obter o label para um alerta mais amigável
+            const labelText = campo ? (campo.previousElementSibling ? campo.previousElementSibling.textContent.replace('*', '').trim() : campoId) : campoId;
+            alert(`Por favor, preencha o campo obrigatório: ${labelText}`);
+            if (campo) campo.focus();
             return false;
         }
     }
@@ -280,10 +350,42 @@ function validarFormulario() {
 }
 
 function coletarDadosFormulario() {
+    // NOVO: Captura dos campos da subestação
+    const potencia1 = document.getElementById('potencia_trafo_1').value;
+    const tensao1 = document.getElementById('tensao_trafo_1').value;
+    const qtdTrafos = document.getElementById('quantidade_trafos').value;
+    const tipoTrafo = document.getElementById('tipo_trafo').value;
+    const cargaInstalada = document.getElementById('carga_instalada').value;
+
+    let potencia2 = '';
+    let tensao2 = '';
+    let potenciaTotal = parseFloat(potencia1);
+
+    if (qtdTrafos === '2') {
+        potencia2 = document.getElementById('potencia_trafo_2').value;
+        tensao2 = document.getElementById('tensao_trafo_2').value;
+        if (potencia2) {
+            potenciaTotal += parseFloat(potencia2);
+        }
+    }
+
+    // Mapeamento dos placeholders
     const dados = {
-        'XXXX': document.getElementById('potencia').value,
+        // NOVOS PLACEHOLDERS SOLICITADOS
+        'PTF1': potencia1, // Potência do Trafo 1
+        'TTF1': tensao1,   // Tensão do Trafo 1
+        'PTF2': potencia2 || 'N/A', // Potência do Trafo 2 (ou N/A)
+        'TTF2': tensao2 || 'N/A',   // Tensão do Trafo 2 (ou N/A)
+        'TIPO_TRAFO': tipoTrafo, // NOVO PLACEHOLDER SUGERIDO
+        'ZXXZ': cargaInstalada, // Placeholder para Carga Instalada
+
+        // PLACEHOLDERS EXISTENTES (Atualizados com a nova lógica)
+        'XXXX': potenciaTotal.toString(), // Potência Total (soma Trafo 1 e 2)
+        'DDDD': tensao1, // Tensão Geral (usando Trafo 1 como referência)
+        'ZXZX': document.getElementById('demanda').value, // Demanda (Mantido)
+        
+        // PLACEHOLDERS EXISTENTES (Mantidos)
         'YYYY': document.getElementById('art').value,
-        'DDDD': document.getElementById('tensao').value,
         'EEEE': document.getElementById('ramal_tamanho').value,
         'FFFF': document.getElementById('ramal_cabo').value,
         'GGGG': document.getElementById('nome_projeto').value,
@@ -291,9 +393,11 @@ function coletarDadosFormulario() {
         'XXXY': document.getElementById('endereco_empreendimento').value,
         'HHHH': document.getElementById('localizacao_projeto').value,
         'VVVV': document.getElementById('numero_uc').value,
-        'ZXZX': document.getElementById('demanda').value,
         'DTIN': formatarData(document.getElementById('data_inicio').value),
-        'DTFI': formatarData(document.getElementById('data_fim').value)
+        'DTFI': formatarData(document.getElementById('data_fim').value),
+        
+        // Dados do engenheiro
+        // ... (resto do código de Engenheiro, Cliente e Datas)
     };
     
     // Dados do engenheiro
@@ -323,7 +427,7 @@ function coletarDadosFormulario() {
     // Extrair município
     dados['ZZZZ'] = extrairMunicipio(dados['XXXY']);
     
-    // Adicionar datas formatadas
+    // Adicionar datas formatadas (com correção do zero padding)
     const hoje = new Date();
     
     // 1. Obter e formatar o dia (com zero à esquerda)
@@ -570,8 +674,9 @@ function baixarTodosDocumentos() {
             // Criar link para download do ZIP
             const url = URL.createObjectURL(content);
             const a = document.createElement('a');
+            const nomeProjeto = dadosProcessados['GGGG'].replace(/[^a-z0-9]/gi, '_').toLowerCase();
             a.href = url;
-            a.download = `Documentos_${dadosProcessados['GGGG'].replace(/[^a-z0-9]/gi, '_')}.zip`;
+            a.download = `Documentos_${nomeProjeto}.zip`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
