@@ -81,7 +81,7 @@ const CLIENTES = {
     }
 };
 
-// Dados para os Transformadores
+// Dados para os Transformadores (ADICIONADO)
 const PT_TRAFO = [112.5, 150, 225, 500, 750, 1000, 1250, 1500];
 
 // Mapeamento dos meses em português
@@ -128,6 +128,7 @@ async function initApp() {
     setupEventListeners();
 }
 
+// NOVO: Funções de Trafo
 function populateTrafoPotencias() {
     const select1 = document.getElementById('potencia_trafo_1');
     const select2 = document.getElementById('potencia_trafo_2');
@@ -161,7 +162,6 @@ function setupTrafoQuantityListener() {
         trafo2Fields.style.display = show ? 'grid' : 'none';
         
         // Define/remove a obrigatoriedade dos campos
-        // Garante que só define 'required' se o campo realmente existir
         if (potencia2) potencia2.required = show;
         if (tensao2) tensao2.required = show;
         
@@ -179,6 +179,7 @@ function setupTrafoQuantityListener() {
         toggleTrafo2(event.target.value === '2');
     });
 }
+// FIM: Funções de Trafo
 
 function setupDefaultDates() {
     const hoje = new Date();
@@ -220,9 +221,7 @@ function populateSelectors() {
 
 async function checkTemplates() {
     const statusElement = document.getElementById('template-status');
-    if (!statusElement) return;
     
-    // Restante da função checkTemplates (sem alterações)
     try {
         const templates = await Promise.all(
             Object.values(TEMPLATES).map(template => fetch(template).then(res => res.ok))
@@ -275,9 +274,11 @@ function setupEventListeners() {
         });
     }
     
+    // Botão copiar dados
     const copyBtn = document.getElementById('copy-data-btn');
     if (copyBtn) copyBtn.addEventListener('click', copiarDados);
     
+    // Botão download individual
     const downloadIndividualBtn = document.getElementById('download-individual-btn');
     if (downloadIndividualBtn) {
         downloadIndividualBtn.addEventListener('click', () => {
@@ -338,11 +339,13 @@ async function processarFormulario() {
 }
 
 function validarFormulario() {
-    // ATUALIZADO: Apenas POTÊNCIA e TENSÃO, removendo ART e Ramais
+    // Campos ORIGINAIS (Dados do Projeto)
     const camposObrigatorios = [
-        'potencia', 'tensao', // Dados do Projeto
-        'potencia_trafo_1', 'tensao_trafo_1', 'carga_instalada', // Informações da Subestação
-        'nome_projeto', 'concessionaria', 'endereco_empreendimento', // Informações Gerais
+        'potencia', 'art', 'tensao', 'ramal_tamanho', 'ramal_cabo',
+        // NOVOS campos da Subestação
+        'potencia_trafo_1', 'tensao_trafo_1', 'carga_instalada', 'tipo_trafo',
+        // Demais campos
+        'nome_projeto', 'concessionaria', 'endereco_empreendimento',
         'localizacao_projeto', 'numero_uc', 'demanda', 'data_inicio', 'data_fim',
         'engenheiro', 'cliente'
     ];
@@ -367,11 +370,7 @@ function validarFormulario() {
 }
 
 function coletarDadosFormulario() {
-    // Dados do Projeto (Antigos)
-    const potenciaProjeto = document.getElementById('potencia').value;
-    const tensaoProjeto = document.getElementById('tensao').value;
-    
-    // Dados de Informações da Subestação (Novos)
+    // Dados da Subestação (Novos)
     const potencia1 = document.getElementById('potencia_trafo_1').value;
     const tensao1 = document.getElementById('tensao_trafo_1').value;
     const qtdTrafos = document.getElementById('quantidade_trafos').value;
@@ -390,26 +389,24 @@ function coletarDadosFormulario() {
         }
     }
 
-    // Mapeamento final dos placeholders
+    // Mapeamento dos placeholders
     const dados = {
-        // PLACEHOLDERS DO PROJETO (Manuais, tomam precedência)
-        'XXXX': potenciaProjeto, // Potência da Subestação em kVA
-        'DDDD': tensaoProjeto,   // Tensão Geral
+        // PLACEHOLDERS ORIGINAIS (Dados do Projeto) - RESTAURADO
+        'XXXX': document.getElementById('potencia').value, // POTÊNCIA DA SUBESTAÇÃO EM KVA
+        'YYYY': document.getElementById('art').value,       // ART
+        'DDDD': document.getElementById('tensao').value,    // TENSÃO GERAL
+        'EEEE': document.getElementById('ramal_tamanho').value, // Tamanho do ramal
+        'FFFF': document.getElementById('ramal_cabo').value,    // Cabo do ramal
         
-        // PLACEHOLDERS DA SUBESTAÇÃO (Detalhes)
+        // PLACEHOLDERS DA SUBESTAÇÃO (Detalhes) - ADICIONADO
         'PTF1': potencia1, // Potência do Trafo 1
         'TTF1': tensao1,   // Tensão do Trafo 1
         'PTF2': potencia2 || 'N/A', // Potência do Trafo 2 (ou N/A)
         'TTF2': tensao2 || 'N/A',   // Tensão do Trafo 2 (ou N/A)
         'TIPO_TRAFO': tipoTrafo, // Tipo do Trafo
         'ZXXZ': cargaInstalada, // Carga Instalada
-
+        
         // PLACEHOLDERS EXISTENTES (Outros)
-        // YYYY, EEEE, FFFF removidos daqui
-        'YYYY': '', // Se necessário, defina como vazio para não quebrar templates
-        'EEEE': '',
-        'FFFF': '',
-
         'GGGG': document.getElementById('nome_projeto').value,
         'LLLL': document.getElementById('concessionaria').value,
         'XXXY': document.getElementById('endereco_empreendimento').value,
@@ -417,10 +414,7 @@ function coletarDadosFormulario() {
         'VVVV': document.getElementById('numero_uc').value,
         'ZXZX': document.getElementById('demanda').value, // Demanda
         'DTIN': formatarData(document.getElementById('data_inicio').value),
-        'DTFI': formatarData(document.getElementById('data_fim').value),
-        
-        // Dados do engenheiro
-        // ... (código existente)
+        'DTFI': formatarData(document.getElementById('data_fim').value)
     };
     
     // Dados do engenheiro
@@ -450,7 +444,7 @@ function coletarDadosFormulario() {
     // Extrair município
     dados['ZZZZ'] = extrairMunicipio(dados['XXXY']);
     
-    // Adicionar datas formatadas (com correção do zero padding)
+    // Adicionar datas formatadas
     const hoje = new Date();
     
     // 1. Obter e formatar o dia (com zero à esquerda)
@@ -564,7 +558,6 @@ async function processarTemplateWord(arrayBuffer, dados) {
         // 1. Carregar o ArrayBuffer com Pizzip
         const zip = new PizZip(arrayBuffer);
 
-        // Substitua o Passo 2 por isso se realmente precisar manter os [placeholders]
         const doc = new docxtemplater(zip, {
             paragraphLoop: true,
             linebreaks: true,
@@ -575,7 +568,6 @@ async function processarTemplateWord(arrayBuffer, dados) {
         });
 
         // 3. Definir os dados para substituição
-        // Nota: As chaves no 'dados' devem ser iguais aos placeholders no Word.
         doc.setData(dados);
 
         // 4. Executar a substituição
@@ -692,9 +684,8 @@ function baixarTodosDocumentos() {
             // Criar link para download do ZIP
             const url = URL.createObjectURL(content);
             const a = document.createElement('a');
-            const nomeProjeto = dadosProcessados['GGGG'].replace(/[^a-z0-9]/gi, '_').toLowerCase();
             a.href = url;
-            a.download = `Documentos_${nomeProjeto}.zip`;
+            a.download = `Documentos_${dadosProcessados['GGGG'].replace(/[^a-z0-9]/gi, '_')}.zip`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
