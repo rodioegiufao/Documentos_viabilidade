@@ -66,49 +66,52 @@
                 <!-- Formulário -->
                 <form id="document-form">
                     <section class="form-section">
-                        <h2><i class="fas fa-pencil-alt"></i> Dados do Projeto</h2>
+                        <h2><i class="fas fa-bolt"></i> Informações Gerais da Subestação</h2>
                         
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label for="potencia">
-                                    <i class="fas fa-bolt"></i> POTÊNCIA DA SUBESTAÇÃO EM KVA *
-                                </label>
-                                <input type="text" id="potencia" placeholder="Ex: 225" required>
-                                <small>Valor que substituirá [XXXX] nos documentos</small>
+                        <div class="input-group">
+                            <label for="quantidade_trafos">Quantidade de Transformadores:</label>
+                            <select id="quantidade_trafos" name="quantidade_trafos" required>
+                                <option value="1">1 Transformador</option>
+                                <option value="2">2 Transformadores</option>
+                            </select>
+                        </div>
+                    
+                        <div class="input-group">
+                            <label for="tipo_trafo">Tipo de Transformador:</label>
+                            <select id="tipo_trafo" name="tipo_trafo" required>
+                                <option value="ÓLEO">ÓLEO</option>
+                                <option value="SECO">SECO</option>
+                            </select>
+                        </div>
+                    
+                        <div class="input-group">
+                            <label for="potencia_trafo_1">Potência do Trafo 1 (kVA):</label>
+                            <select id="potencia_trafo_1" name="potencia_trafo_1" required>
+                                </select>
+                        </div>
+                    
+                        <div class="input-group">
+                            <label for="tensao_trafo_1">Tensão do Trafo 1 (kV):</label>
+                            <input type="text" id="tensao_trafo_1" name="tensao_trafo_1" placeholder="Ex: 13.8kV" required>
+                        </div>
+                    
+                        <div id="trafo_2_fields" style="display: none;">
+                            <div class="input-group">
+                                <label for="potencia_trafo_2">Potência do Trafo 2 (kVA):</label>
+                                <select id="potencia_trafo_2" name="potencia_trafo_2">
+                                     </select>
                             </div>
-                            
-                            <div class="form-group">
-                                <label for="art">
-                                    <i class="fas fa-file-signature"></i> ART *
-                                </label>
-                                <input type="text" id="art" placeholder="Ex: AM20240488640" required>
-                                <small>Substituirá [YYYY] nos documentos</small>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="tensao">
-                                    <i class="fas fa-plug"></i> TENSÃO GERAL *
-                                </label>
-                                <input type="text" id="tensao" placeholder="Ex: 380/220, 220/127V" required>
-                                <small>Substituirá [DDDD] nos documentos</small>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="ramal_tamanho">
-                                    <i class="fas fa-ruler"></i> Tamanho do ramal de entrada *
-                                </label>
-                                <input type="text" id="ramal_tamanho" placeholder="Ex: 150" required>
-                                <small>Substituirá [EEEE] nos documentos</small>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="ramal_cabo">
-                                    <i class="fas fa-cable-car"></i> Cabo do ramal de entrada MT *
-                                </label>
-                                <input type="text" id="ramal_cabo" placeholder="Ex: 35mm²" required>
-                                <small>Substituirá [FFFF] nos documentos</small>
+                            <div class="input-group">
+                                <label for="tensao_trafo_2">Tensão do Trafo 2 (kV):</label>
+                                <input type="text" id="tensao_trafo_2" name="tensao_trafo_2" placeholder="Ex: 13.8kV">
                             </div>
                         </div>
+                        
+                        <div class="input-group">
+                            <label for="carga_instalada">Carga Instalada (kW/kVA):</label>
+                            <input type="text" id="carga_instalada" name="carga_instalada" placeholder="Ex: 850 kVA" required>
+                        </div>
+                        
                     </section>
                     
                     <section class="form-section">
