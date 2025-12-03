@@ -9,8 +9,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/pizzip@3.1.1/dist/pizzip.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/nom/pizzip-utils@1.0.2/dist/pizzip-utils.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/docxtemplater@3.42.4/build/docxtemplater.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.42.4/docxtemplater.min.js"></script>
 </head>
 <body>
     <div class="container">
@@ -63,36 +63,26 @@
                 <form id="document-form">
                     
                     <section class="form-section">
-                        <h2><i class="fas fa-pencil-alt"></i> Dados do Projeto (Ramal e ART)</h2>
+                        <h2><i class="fas fa-pencil-alt"></i> Dados do Projeto</h2>
                         
                         <div class="form-grid">
                             <div class="form-group">
-                                <label for="art">
-                                    <i class="fas fa-file-signature"></i> ART *
+                                <label for="potencia">
+                                    <i class="fas fa-bolt"></i> POTÊNCIA DA SUBESTAÇÃO EM KVA *
                                 </label>
-                                <input type="text" id="art" placeholder="Ex: AM20240488640" required>
-                                <small>Substituirá [YYYY] nos documentos</small>
+                                <input type="text" id="potencia" placeholder="Ex: 225" required>
+                                <small>Valor que substituirá [XXXX] nos documentos</small>
                             </div>
                             
                             <div class="form-group">
-                                <label for="ramal_tamanho">
-                                    <i class="fas fa-ruler"></i> Tamanho do ramal de entrada *
+                                <label for="tensao">
+                                    <i class="fas fa-plug"></i> TENSÃO GERAL *
                                 </label>
-                                <input type="text" id="ramal_tamanho" placeholder="Ex: 150" required>
-                                <small>Substituirá [EEEE] nos documentos</small>
+                                <input type="text" id="tensao" placeholder="Ex: 380/220, 220/127V" required>
+                                <small>Substituirá [DDDD] nos documentos</small>
                             </div>
-                            
-                            <div class="form-group">
-                                <label for="ramal_cabo">
-                                    <i class="fas fa-cable-car"></i> Cabo do ramal de entrada MT *
-                                </label>
-                                <input type="text" id="ramal_cabo" placeholder="Ex: 35mm²" required>
-                                <small>Substituirá [FFFF] nos documentos</small>
-                            </div>
-                            <div class="form-group"></div>
                         </div>
                     </section>
-                    
                     <section class="form-section">
                         <h2><i class="fas fa-bolt"></i> Informações da Subestação</h2>
                         
@@ -126,7 +116,7 @@
                                 <select id="potencia_trafo_1" required>
                                      <option value="" disabled selected>Selecione a Potência (kVA)</option>
                                 </select>
-                                <small>Substituirá [PTF1] e contribui para [XXXX] (Potência Total).</small>
+                                <small>Substituirá [PTF1].</small>
                             </div>
                             
                             <div class="form-group">
@@ -134,7 +124,7 @@
                                     <i class="fas fa-plug"></i> Tensão do Trafo 1 (kV): *
                                 </label>
                                 <input type="text" id="tensao_trafo_1" placeholder="Ex: 13.8kV" required>
-                                <small>Substituirá [TTF1] e [DDDD] (Tensão Geral).</small>
+                                <small>Substituirá [TTF1].</small>
                             </div>
                         </div>
                         
