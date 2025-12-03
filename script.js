@@ -423,42 +423,221 @@ async function gerarDocumentosWord(dados, documentosParaGerar) {
     }
 }
 
+// Função corrigida para processar templates Word
 async function processarTemplateWord(arrayBuffer, dados) {
-    // Para simplificar, vamos fazer uma substituição básica no conteúdo binário
-    // Nota: Esta é uma abordagem simplificada. Para substituição complexa em Word,
-    // seria necessário usar docxtemplater ou similar
-    
     try {
-        // Converter ArrayBuffer para Uint8Array
-        const data = new Uint8Array(arrayBuffer);
-        
-        // Converter para string (simplificado - funciona para textos simples)
-        let content = '';
-        for (let i = 0; i < data.length; i++) {
-            content += String.fromCharCode(data[i]);
-        }
-        
-        // Substituir placeholders (simplificado)
-        Object.keys(dados).forEach(key => {
-            const placeholder = `[${key}]`;
-            const value = dados[key];
-            // Substituir de forma simples (pode não funcionar para formatação complexa)
-            content = content.split(placeholder).join(value);
+        // Carregar o template com docxtemplater
+        const zip = new PizZip(arrayBuffer);
+        const doc = new window.docxtemplater(zip, {
+            paragraphLoop: true,
+            linebreaks: true
         });
         
-        // Converter de volta para ArrayBuffer
-        const buffer = new ArrayBuffer(content.length);
-        const view = new Uint8Array(buffer);
-        for (let i = 0; i < content.length; i++) {
-            view[i] = content.charCodeAt(i);
-        }
+        // Preparar dados para substituição
+        // Converter todos os dados para strings
+        const templateData = {};
+        Object.keys(dados).forEach(key => {
+            templateData[key] = String(dados[key] || '');
+        });
         
-        return buffer;
+        // Renderizar o documento com os dados
+        doc.render(templateData);
+        
+        // Gerar o documento final
+        const out = doc.getZip().generate({
+            type: 'blob',
+            mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        });
+        
+        return await blobToArrayBuffer(out);
         
     } catch (error) {
-        console.error('Erro no processamento Word:', error);
-        // Fallback: retornar o buffer original
+        console.error('Erro ao processar template Word:', error);
+        
+        // Fallback: Retornar o buffer original
         return arrayBuffer;
+    }
+}
+
+// Função auxiliar para converter Blob para ArrayBuffer
+function blobToArrayBuffer(blob) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsArrayBuffer(blob);
+    });
+}
+
+// ATUALIZAÇÃO: Nova função para processar documentos com fetch corrigido
+async function gerarDocumentosWordCorrigido(dados, documentosParaGerar) {
+    documentosGerados = [];
+    
+    for (const docInfo of documentosParaGerar) {
+        try {
+            const templateUrl = TEMPLATES[docInfo.tipo];
+            
+            // Fetch do template
+            const response = await fetch(templateUrl);
+            
+            if (!response.ok) {
+                throw new Error(`Template não encontrado: ${templateUrl} - Status: ${response.status}`);
+            }
+            
+            const arrayBuffer = await response.arrayBuffer();
+            
+            // Processar com docxtemplater
+            const docxContent = await processarTemplateWordCorrigido(arrayBuffer, dados);
+            
+            // Nome do arquivo final
+            const nomeProjeto = dados['GGGG'].replace(/[^a-z0-9]/gi, '_').toLowerCase();
+            const nomeArquivo = `${docInfo.nomeArquivo} - ${nomeProjeto}.docx`;
+            
+            documentosGerados.push({
+                nome: docInfo.nome,
+                nomeArquivo: nomeArquivo,
+                conteudo: docxContent,
+                tipo: docInfo.tipo
+            });
+            
+            console.log(`Documento ${docInfo.nome} processado com sucesso`);
+            
+        } catch (error) {
+            console.error(`Erro ao processar ${docInfo.nome}:`, error);
+            throw error;
+        }
+    }
+}
+
+// Função corrigida com tratamento melhor de erros
+async function processarTemplateWordCorrigido(arrayBuffer, dados) {
+    return new Promise((resolve, reject) => {
+        try {
+            // Verificar se PizZip e docxtemplater estão disponíveis
+            if (typeof PizZip === 'undefined' || typeof window.docxtemplater === 'undefined') {
+                throw new Error('Bibliotecas de processamento Word não carregadas');
+            }
+            
+            // Carregar o template
+            const zip = new PizZip(arrayBuffer);
+            
+            let doc;
+            try {
+                doc = new window.docxtemplater(zip, {
+                    paragraphLoop: true,
+                    linebreaks: true,
+                    parser: function(tag) {
+                        return {
+                            get: function(scope) {
+                                // Retornar o valor ou string vazia se não existir
+                                return scope[tag] || '';
+                            }
+                        };
+                    }
+                });
+            } catch (initError) {
+                console.error('Erro ao inicializar docxtemplater:', initError);
+                throw new Error('Formato de template inválido');
+            }
+            
+            // Preparar dados para substituição
+            const templateData = {};
+            
+            // Adicionar todos os dados
+            Object.keys(dados).forEach(key => {
+                templateData[key] = String(dados[key] || '');
+            });
+            
+            // Adicionar algumas propriedades extras para formatação
+            templateData['underline_MMMM'] = dados['MMMM'] || '';
+            templateData['underline_OOOO'] = dados['OOOO'] || '';
+            templateData['underline_GGGG'] = dados['GGGG'] || '';
+            templateData['underline_XXXY'] = dados['XXXY'] || '';
+            templateData['underline_HHHH'] = dados['HHHH'] || '';
+            templateData['underline_NNNN'] = dados['NNNN'] || '';
+            templateData['underline_VVVV'] = dados['VVVV'] || '';
+            templateData['underline_XXXX'] = dados['XXXX'] || '';
+            templateData['underline_ZXZX'] = dados['ZXZX'] || '';
+            templateData['underline_DDDD'] = dados['DDDD'] || '';
+            templateData['underline_DTIN'] = dados['DTIN'] || '';
+            templateData['underline_DTFI'] = dados['DTFI'] || '';
+            templateData['underline_BBBB'] = dados['BBBB'] || '';
+            templateData['underline_CCCC'] = dados['CCCC'] || '';
+            templateData['underline_XXYY'] = dados['XXYY'] || '';
+            
+            // Tentar renderizar
+            try {
+                doc.render(templateData);
+            } catch (renderError) {
+                console.error('Erro ao renderizar documento:', renderError);
+                throw new Error('Erro na substituição dos dados');
+            }
+            
+            // Gerar o documento final
+            let out;
+            try {
+                out = doc.getZip().generate({
+                    type: 'blob',
+                    mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                    compression: 'DEFLATE'
+                });
+            } catch (generateError) {
+                console.error('Erro ao gerar documento:', generateError);
+                throw new Error('Erro na geração do documento final');
+            }
+            
+            // Converter blob para arrayBuffer
+            const reader = new FileReader();
+            reader.onload = function() {
+                resolve(reader.result);
+            };
+            reader.onerror = function(error) {
+                reject(new Error('Erro na conversão do documento'));
+            };
+            reader.readAsArrayBuffer(out);
+            
+        } catch (error) {
+            console.error('Erro geral no processamento:', error);
+            reject(error);
+        }
+    });
+}
+
+// ATUALIZAÇÃO: Modificar a função principal para usar a versão corrigida
+async function processarFormulario() {
+    // Validar campos obrigatórios
+    if (!validarFormulario()) return;
+    
+    // Mostrar loading
+    showLoading(true);
+    
+    try {
+        // Coletar e processar dados
+        const dados = coletarDadosFormulario();
+        
+        // Verificar quais documentos gerar
+        const documentosParaGerar = getDocumentosSelecionados();
+        
+        if (documentosParaGerar.length === 0) {
+            alert('Selecione pelo menos um documento para gerar.');
+            showLoading(false);
+            return;
+        }
+        
+        console.log('Iniciando geração de documentos...');
+        console.log('Dados coletados:', dados);
+        
+        // Gerar documentos (usando a versão corrigida)
+        await gerarDocumentosWordCorrigido(dados, documentosParaGerar);
+        
+        // Exibir resultados
+        exibirResultados();
+        
+    } catch (error) {
+        console.error('Erro ao processar:', error);
+        alert('Erro ao gerar documentos: ' + error.message);
+    } finally {
+        showLoading(false);
     }
 }
 
