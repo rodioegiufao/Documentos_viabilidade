@@ -325,11 +325,25 @@ function coletarDadosFormulario() {
     
     // Adicionar datas formatadas
     const hoje = new Date();
+    
+    // 1. Obter e formatar o dia (com zero à esquerda)
+    const diaFormatado = hoje.getDate().toString().padStart(2, '0');
+    
+    // 2. Obter e formatar o mês (com zero à esquerda)
+    // O mês é base 0, então somamos 1 antes de formatar.
+    const mesFormatado = (hoje.getMonth() + 1).toString().padStart(2, '0');
+    
+    // 3. Obter o nome do mês em português (reutilizando sua lógica)
     const mesIngles = hoje.toLocaleString('en-US', { month: 'long' });
+    // Certifique-se de que a variável global MESES_PT_BR está definida!
     const mesPortugues = MESES_PT_BR[mesIngles] || mesIngles;
     
-    dados['14 / 07 / 2026'] = hoje.getDate() + ' / ' + (hoje.getMonth() + 1) + ' / ' + (hoje.getFullYear() + 1);
-    dados['14 de julho de 2025'] = hoje.getDate() + ' de ' + mesPortugues + ' de ' + hoje.getFullYear();
+    // 4. Aplicar nos dados
+    // Chave: '14 / 07 / 2026' (Usado como placeholder para data futura)
+    dados['14 / 07 / 2026'] = `${diaFormatado} / ${mesFormatado} / ${hoje.getFullYear() + 1}`;
+    
+    // Chave: '14 de julho de 2025' (Usado como placeholder para data por extenso)
+    dados['14 de julho de 2025'] = `${diaFormatado} de ${mesPortugues} de ${hoje.getFullYear()}`;
     
     // Salvar dados para uso posterior
     dadosProcessados = { ...dados };
