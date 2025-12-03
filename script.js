@@ -1,7 +1,3 @@
-// No início do arquivo, adicione esta verificação
-console.log('JSZip disponível?', typeof JSZip !== 'undefined');
-console.log('docxtemplater disponível?', typeof docxtemplater !== 'undefined');
-
 // Dados fixos
 const ENGENHEIROS = {
     "SALOMÃO JOSE COHEN": {
@@ -427,206 +423,42 @@ async function gerarDocumentosWord(dados, documentosParaGerar) {
     }
 }
 
-// Função corrigida para processar templates Word
 async function processarTemplateWord(arrayBuffer, dados) {
+    // Para simplificar, vamos fazer uma substituição básica no conteúdo binário
+    // Nota: Esta é uma abordagem simplificada. Para substituição complexa em Word,
+    // seria necessário usar docxtemplater ou similar
+    
     try {
-        // Carregar o template com docxtemplater
-        const zip = new PizZip(arrayBuffer);
-        const doc = new window.docxtemplater(zip, {
-            paragraphLoop: true,
-            linebreaks: true
-        });
+        // Converter ArrayBuffer para Uint8Array
+        const data = new Uint8Array(arrayBuffer);
         
-        // Preparar dados para substituição
-        // Converter todos os dados para strings
-        const templateData = {};
+        // Converter para string (simplificado - funciona para textos simples)
+        let content = '';
+        for (let i = 0; i < data.length; i++) {
+            content += String.fromCharCode(data[i]);
+        }
+        
+        // Substituir placeholders (simplificado)
         Object.keys(dados).forEach(key => {
-            templateData[key] = String(dados[key] || '');
+            const placeholder = `[${key}]`;
+            const value = dados[key];
+            // Substituir de forma simples (pode não funcionar para formatação complexa)
+            content = content.split(placeholder).join(value);
         });
         
-        // Renderizar o documento com os dados
-        doc.render(templateData);
+        // Converter de volta para ArrayBuffer
+        const buffer = new ArrayBuffer(content.length);
+        const view = new Uint8Array(buffer);
+        for (let i = 0; i < content.length; i++) {
+            view[i] = content.charCodeAt(i);
+        }
         
-        // Gerar o documento final
-        const out = doc.getZip().generate({
-            type: 'blob',
-            mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-        });
-        
-        return await blobToArrayBuffer(out);
+        return buffer;
         
     } catch (error) {
-        console.error('Erro ao processar template Word:', error);
-        
-        // Fallback: Retornar o buffer original
+        console.error('Erro no processamento Word:', error);
+        // Fallback: retornar o buffer original
         return arrayBuffer;
-    }
-}
-
-// Função auxiliar para converter Blob para ArrayBuffer
-function blobToArrayBuffer(blob) {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onloadend = () => resolve(reader.result);
-        reader.onerror = reject;
-        reader.readAsArrayBuffer(blob);
-    });
-}
-
-// ATUALIZAÇÃO: Nova função para processar documentos com fetch corrigido
-async function gerarDocumentosWordCorrigido(dados, documentosParaGerar) {
-    documentosGerados = [];
-    
-    for (const docInfo of documentosParaGerar) {
-        try {
-            const templateUrl = TEMPLATES[docInfo.tipo];
-            
-            // Fetch do template
-            const response = await fetch(templateUrl);
-            
-            if (!response.ok) {
-                throw new Error(`Template não encontrado: ${templateUrl} - Status: ${response.status}`);
-            }
-            
-            const arrayBuffer = await response.arrayBuffer();
-            
-            // Processar com docxtemplater
-            const docxContent = await processarTemplateWordCorrigido(arrayBuffer, dados);
-            
-            // Nome do arquivo final
-            const nomeProjeto = dados['GGGG'].replace(/[^a-z0-9]/gi, '_').toLowerCase();
-            const nomeArquivo = `${docInfo.nomeArquivo} - ${nomeProjeto}.docx`;
-            
-            documentosGerados.push({
-                nome: docInfo.nome,
-                nomeArquivo: nomeArquivo,
-                conteudo: docxContent,
-                tipo: docInfo.tipo
-            });
-            
-            console.log(`Documento ${docInfo.nome} processado com sucesso`);
-            
-        } catch (error) {
-            console.error(`Erro ao processar ${docInfo.nome}:`, error);
-            throw error;
-        }
-    }
-}
-
-async function processarTemplateWordCorrigido(arrayBuffer, dados) {
-    return new Promise((resolve, reject) => {
-        try {
-            // Verificar se JSZip e docxtemplater estão disponíveis
-            if (typeof JSZip === 'undefined' || typeof docxtemplater === 'undefined') {
-                console.error('JSZip:', typeof JSZip);
-                console.error('docxtemplater:', typeof docxtemplater);
-                throw new Error('Bibliotecas de processamento Word não carregadas. Verifique o console.');
-            }
-            
-            console.log('Processando template...');
-            
-            // Carregar o template com JSZip
-            const zip = new JSZip();
-            zip.load(arrayBuffer);
-            
-            // Inicializar docxtemplater
-            const doc = new docxtemplater();
-            doc.loadZip(zip);
-            
-            // Configurar opções
-            doc.setOptions({
-                paragraphLoop: true,
-                linebreaks: true
-            });
-            
-            // Preparar dados para substituição
-            const templateData = {};
-            
-            // Adicionar todos os dados
-            Object.keys(dados).forEach(key => {
-                templateData[key] = String(dados[key] || '');
-            });
-            
-            console.log('Dados para template:', templateData);
-            
-            // Tentar renderizar
-            try {
-                doc.setData(templateData);
-                doc.render();
-            } catch (renderError) {
-                console.error('Erro ao renderizar documento:', renderError);
-                console.error('Detalhes do erro:', renderError.message);
-                throw new Error('Erro na substituição dos dados: ' + renderError.message);
-            }
-            
-            // Gerar o documento final
-            let out;
-            try {
-                out = doc.getZip().generate({
-                    type: 'blob',
-                    mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-                    compression: 'DEFLATE'
-                });
-            } catch (generateError) {
-                console.error('Erro ao gerar documento:', generateError);
-                throw new Error('Erro na geração do documento final');
-            }
-            
-            // Converter blob para arrayBuffer
-            const reader = new FileReader();
-            reader.onload = function() {
-                console.log('Documento processado com sucesso!');
-                resolve(reader.result);
-            };
-            reader.onerror = function(error) {
-                console.error('Erro na conversão:', error);
-                reject(new Error('Erro na conversão do documento'));
-            };
-            reader.readAsArrayBuffer(out);
-            
-        } catch (error) {
-            console.error('Erro geral no processamento:', error);
-            console.error('Stack trace:', error.stack);
-            reject(error);
-        }
-    });
-}
-
-// ATUALIZAÇÃO: Modificar a função principal para usar a versão corrigida
-async function processarFormulario() {
-    // Validar campos obrigatórios
-    if (!validarFormulario()) return;
-    
-    // Mostrar loading
-    showLoading(true);
-    
-    try {
-        // Coletar e processar dados
-        const dados = coletarDadosFormulario();
-        
-        // Verificar quais documentos gerar
-        const documentosParaGerar = getDocumentosSelecionados();
-        
-        if (documentosParaGerar.length === 0) {
-            alert('Selecione pelo menos um documento para gerar.');
-            showLoading(false);
-            return;
-        }
-        
-        console.log('Iniciando geração de documentos...');
-        console.log('Dados coletados:', dados);
-        
-        // Gerar documentos (usando a versão corrigida)
-        await gerarDocumentosWordCorrigido(dados, documentosParaGerar);
-        
-        // Exibir resultados
-        exibirResultados();
-        
-    } catch (error) {
-        console.error('Erro ao processar:', error);
-        alert('Erro ao gerar documentos: ' + error.message);
-    } finally {
-        showLoading(false);
     }
 }
 
