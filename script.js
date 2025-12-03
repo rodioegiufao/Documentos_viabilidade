@@ -428,10 +428,14 @@ async function processarTemplateWord(arrayBuffer, dados) {
         // 1. Carregar o ArrayBuffer com Pizzip
         const zip = new PizZip(arrayBuffer);
 
-        // 2. Criar uma instância de Docxtemplater
+        // Substitua o Passo 2 por isso se realmente precisar manter os [placeholders]
         const doc = new docxtemplater(zip, {
             paragraphLoop: true,
             linebreaks: true,
+            delimiters: {
+                start: '[',
+                end: ']'
+            }
         });
 
         // 3. Definir os dados para substituição
