@@ -92,11 +92,9 @@ const IZ_220 = [444, 624, 716, 1924, 2405, 3367, 4424, 4424];
 const CAB_220 = [70, 95, 150, 240, 240, 240, 300, 300];
 const QTD_CAB_220 = ["2x70", "2x95", "2x150", "4x240", "5x240", "7x240", "8x300", "8x300"];
 
-// NOVO: Corrente do Cabo (IZXY)
-const I_CAB_220 = [222, 269, 358, 481, 481, 481, 553, 553];
+const I_CAB_220 = [222, 269, 358, 481, 481, 481, 553, 553]; // Corrente do Cabo (IZXY)
 
-// NOVO: Ajuste da Proteção (IAJU)
-const I_AJUSTE_220 = [
+const I_AJUSTE_220 = [ // Ajuste da Proteção (IAJU)
     "300A – 100%", 
     "400A – 100%", 
     "600A – 95,24%", 
@@ -114,11 +112,9 @@ const IZ_380 = [222, 444, 444, 816, 1443, 1924, 2405, 2886];
 const CAB_380 = [70, 70, 70, 185, 240, 240, 240, 240];
 const QTD_CAB_380 = ["70", "2x70", "2x70", "2x185", "3x240", "4x240", "5x240", "6x240"];
 
-// NOVO: Corrente do Cabo (IZXY)
-const I_CAB_380 = [222, 222, 222, 408, 481, 481, 481, 481];
+const I_CAB_380 = [222, 222, 222, 408, 481, 481, 481, 481]; // Corrente do Cabo (IZXY)
 
-// NOVO: Ajuste da Proteção (IAJU)
-const I_AJUSTE_380 = [
+const I_AJUSTE_380 = [ // Ajuste da Proteção (IAJU)
     "180A – 90%", 
     "230A – 76,67%", 
     "350A – 87,5%", 
@@ -437,7 +433,7 @@ function validarFormulario() {
 }
 
 /**
- * FUNÇÃO DE AJUDA: Calcula os dados de proteção (IB, IN, IZ, CAB, QTD_CAB, I_CAB, I_AJUSTE)
+ * FUNÇÃO DE AJUDA: Calcula os dados de proteção (IB, IN, IZ, CAB, QTD_CAB, I_CAB, I_AJUSTE, IZ_X_145)
  * para um transformador específico.
  */
 function getTrafoData(potencia, tensao, trafoNumber) {
@@ -449,9 +445,10 @@ function getTrafoData(potencia, tensao, trafoNumber) {
             [`IZXX${trafoNumber}`]: 'N/A',
             [`CABX${trafoNumber}`]: 'N/A',
             [`QTDY${trafoNumber}`]: 'N/A',
-            // NOVOS
             [`IZXY${trafoNumber}`]: 'N/A', 
-            [`IAJU${trafoNumber}`]: 'N/A'
+            [`IAJU${trafoNumber}`]: 'N/A',
+            // NOVO
+            [`IZ14${trafoNumber}`]: 'N/A'
         };
     }
 
@@ -464,7 +461,8 @@ function getTrafoData(potencia, tensao, trafoNumber) {
     }
 
     let IB_ARR, IN_ARR, IZ_ARR, CAB_ARR, QTD_CAB_ARR;
-    let I_CAB_ARR, I_AJUSTE_ARR; // NOVOS ARRAYS
+    let I_CAB_ARR, I_AJUSTE_ARR; 
+    let IZ_TO_CALCULATE_ARR; // Array base para o cálculo de 1,45
 
     // Seleciona o conjunto de arrays de proteção com base na tensão
     if (tensao === "220/127V") {
@@ -476,6 +474,8 @@ function getTrafoData(potencia, tensao, trafoNumber) {
         
         I_CAB_ARR = I_CAB_220;
         I_AJUSTE_ARR = I_AJUSTE_220;
+        
+        IZ_TO_CALCULATE_ARR = IZ_220; // Usar IZ_220 para cálculo
 
     } else if (tensao === "380V/220V") {
         IB_ARR = IB_380;
@@ -486,10 +486,21 @@ function getTrafoData(potencia, tensao, trafoNumber) {
         
         I_CAB_ARR = I_CAB_380;
         I_AJUSTE_ARR = I_AJUSTE_380;
+        
+        IZ_TO_CALCULATE_ARR = IZ_380; // Usar IZ_380 para cálculo
 
     } else {
         return getTrafoData('', '', trafoNumber); // Tensão desconhecida
     }
+
+    // NOVO CÁLCULO: IZ_X_145
+    // Pega o valor de IZ do array correspondente e multiplica por 1.45
+    const izValue = parseFloat(IZ_TO_CALCULATE_ARR[index]);
+    let iz145Result = 'N/A';
+    if (!isNaN(izValue)) {
+        iz145Result = (izValue * 1.45).toFixed(2); // Duas casas decimais
+    }
+
 
     // Retorna o objeto com os placeholders e seus valores
     return {
@@ -499,9 +510,12 @@ function getTrafoData(potencia, tensao, trafoNumber) {
         [`CABX${trafoNumber}`]: CAB_ARR[index],
         [`QTDY${trafoNumber}`]: QTD_CAB_ARR[index],
         
-        // NOVOS PLACEHOLDERS
-        [`IZXY${trafoNumber}`]: I_CAB_ARR[index], // Corrente do Cabo (I_CAB)
-        [`IAJU${trafoNumber}`]: I_AJUSTE_ARR[index] // Ajuste da Proteção (I_AJUSTE)
+        // Novos Placeholders da iteração anterior
+        [`IZXY${trafoNumber}`]: I_CAB_ARR[index], 
+        [`IAJU${trafoNumber}`]: I_AJUSTE_ARR[index],
+        
+        // NOVO PLACEHOLDER DE CÁLCULO
+        [`IZ14${trafoNumber}`]: iz145Result
     };
 }
 
@@ -544,10 +558,10 @@ function coletarDadosFormulario() {
         'TIPO_TRAFO': tipoTrafo, // Tipo do Trafo
         'ZXXZ': cargaInstalada, // Carga Instalada (Novo/Movido)
         
-        // Dados de Proteção (Trafo 1) - NOVOS PLACEHOLDERS
+        // Dados de Proteção (Trafo 1)
         ...dadosTrafo1,
         
-        // Dados de Proteção (Trafo 2) - NOVOS PLACEHOLDERS
+        // Dados de Proteção (Trafo 2)
         ...dadosTrafo2,
         
         // PLACEHOLDERS EXISTENTES (Outros)
