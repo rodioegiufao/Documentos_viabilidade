@@ -85,7 +85,12 @@
                                 <label for="tensao">
                                     <i class="fas fa-plug"></i> TENSÃO GERAL *
                                 </label>
-                                <input type="text" id="tensao" placeholder="Ex: 380/220, 220/127V" required>
+                                <select id="tensao" required>
+                                    <option value="" disabled selected>Selecione a Tensão Geral</option>
+                                    <option value="380/220V">380/220V</option>
+                                    <option value="220/127V">220/127V</option>
+                                    <option value="380/220V e 220/127V">380/220V e 220/127V</option>
+                                </select>
                                 <small>Substituirá [DDDD] nos documentos</small>
                             </div>
                             
