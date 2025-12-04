@@ -410,7 +410,7 @@ function validarFormulario() {
         'carga_instalada', // Campo movido/novo
         'nome_projeto', 'concessionaria', 'endereco_empreendimento',
         'localizacao_projeto', 'numero_uc', 'demanda', 'data_inicio', 'data_fim',
-        'engenheiro', 'cliente'
+        'engenheiro', 'cliente', 'tipo_pessoa_juridica'
     ];
     
     // Adiciona Trafo 2 condicionalmente
@@ -572,7 +572,8 @@ function coletarDadosFormulario() {
         'VVVV': document.getElementById('numero_uc').value,
         'ZXZX': document.getElementById('demanda').value, // Demanda
         'DTIN': formatarData(document.getElementById('data_inicio').value),
-        'DTFI': formatarData(document.getElementById('data_fim').value)
+        'DTFI': formatarData(document.getElementById('data_fim').value),
+        'PJDP': document.getElementById('tipo_pessoa_juridica').value
     };
     
     // Dados do engenheiro
