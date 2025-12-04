@@ -620,7 +620,7 @@ function coletarDadosFormulario() {
     dados['14 de julho de 2025'] = `${diaFormatado} de ${mesPortugues} de ${hoje.getFullYear()}`;
 
     // NOVO: Adicionar o placeholder [MES_ATUAL] (Solicitação do usuário)
-    dados['MES_ATUAL'] = mesPortugues;
+    dados['MES_ATUAL'] = mesPortugues.toUpperCase();
     
     // Salvar dados para uso posterior
     dadosProcessados = { ...dados };
