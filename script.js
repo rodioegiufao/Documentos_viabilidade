@@ -618,6 +618,9 @@ function coletarDadosFormulario() {
     // 4. Aplicar nos dados
     dados['14 / 07 / 2026'] = `${diaFormatado} / ${mesFormatado} / ${hoje.getFullYear() + 1}`;
     dados['14 de julho de 2025'] = `${diaFormatado} de ${mesPortugues} de ${hoje.getFullYear()}`;
+
+    // NOVO: Adicionar o placeholder [MES_ATUAL] (Solicitação do usuário)
+    dados['MES_ATUAL'] = mesPortugues;
     
     // Salvar dados para uso posterior
     dadosProcessados = { ...dados };
