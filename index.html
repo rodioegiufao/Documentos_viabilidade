@@ -227,13 +227,16 @@
                                 <input type="text" id="carga_instalada" placeholder="Ex: 850" required>
                                 <small>Substituirá [ZXXZ] (placeholder solicitado).</small>
                             </div>
-                            <div class="input-group">
-                                <label for="tipo_pj">Tipo de Pessoa Jurídica *</label>
-                                <select id="tipo_pj" required>
-                                    <option value="" disabled selected>Selecione o Tipo</option>
+                            <div class="form-group">
+                                <label for="tipo_pessoa_juridica">
+                                    <i class="fas fa-gavel"></i> Tipo de Pessoa Jurídica *
+                                </label>
+                                <select id="tipo_pessoa_juridica" required>
+                                    <option value="" disabled selected>Selecione o Tipo Jurídico</option>
                                     <option value="Pessoa jurídica de direito público">Pessoa jurídica de direito público</option>
                                     <option value="Pessoa jurídica de direito privado">Pessoa jurídica de direito privado</option>
                                 </select>
+                                <small>Substituirá [PJDP] nos documentos</small>
                             </div>
                             <div class="form-group"></div> </div>
                     </section>
