@@ -629,7 +629,19 @@ function coletarDadosFormulario() {
 }
 
 function formatarData(dataString) {
-    const data = new Date(dataString);
+    // dataString é "YYYY-MM-DD" do input. Ao usar new Date(dataString) ele assume UTC,
+    // o que pode resultar no dia anterior no fuso horário local.
+    
+    // Solução: Analisar os componentes e criar a data no fuso local.
+    const partes = dataString.split('-');
+    const ano = parseInt(partes[0]);
+    // Mês em JavaScript é 0-indexado (Janeiro = 0, Dezembro = 11), por isso subtraímos 1.
+    const mes = parseInt(partes[1]) - 1; 
+    const dia = parseInt(partes[2]);
+    
+    // Cria a data no fuso horário local (00:00:00 do dia escolhido)
+    const data = new Date(ano, mes, dia);
+    
     return data.toLocaleDateString('pt-BR');
 }
 
