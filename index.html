@@ -9,6 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/pizzip@3.1.1/dist/pizzip.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/nom/pizzip-utils@1.0.2/dist/pizzip-utils.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/docxtemplater@3.42.4/build/docxtemplater.js"></script>
 </head>
 <body>
@@ -60,7 +61,6 @@
 
             <main class="content">
                 <form id="document-form">
-                    
                     <section class="form-section">
                         <h2><i class="fas fa-pencil-alt"></i> Dados do Projeto</h2>
                         
@@ -85,7 +85,12 @@
                                 <label for="tensao">
                                     <i class="fas fa-plug"></i> TENSÃO GERAL *
                                 </label>
-                                <input type="text" id="tensao" placeholder="Ex: 380/220, 220/127V" required>
+                                <select id="tensao" required>
+                                    <option value="" disabled selected>Selecione a Tensão Geral</option>
+                                    <option value="380/220V">380/220V</option>
+                                    <option value="220/127V">220/127V</option>
+                                    <option value="380/220V e 220/127V">380/220V e 220/127V</option>
+                                </select>
                                 <small>Substituirá [DDDD] nos documentos</small>
                             </div>
                             
@@ -106,79 +111,7 @@
                             </div>
                         </div>
                     </section>
-                    <section class="form-section">
-                        <h2><i class="fas fa-bolt"></i> Informações da Subestação</h2>
-                        
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label for="quantidade_trafos">
-                                    <i class="fas fa-cubes"></i> Quantidade de Transformadores: *
-                                </label>
-                                <select id="quantidade_trafos" required>
-                                    <option value="1">1 Transformador</option>
-                                    <option value="2">2 Transformadores</option>
-                                </select>
-                                <small>Define se os campos do Trafo 2 serão exibidos.</small>
-                            </div>
-            
-                            <div class="form-group">
-                                <label for="tipo_trafo">
-                                    <i class="fas fa-oil-can"></i> Tipo de Transformador: *
-                                </label>
-                                <select id="tipo_trafo" required>
-                                    <option value="ÓLEO">ÓLEO</option>
-                                    <option value="SECO">SECO</option>
-                                </select>
-                                <small>Substituirá [TIPO_TRAFO] (novo placeholder).</small>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="potencia_trafo_1">
-                                    <i class="fas fa-industry"></i> Potência do Trafo 1 (kVA): *
-                                </label>
-                                <select id="potencia_trafo_1" required>
-                                     <option value="" disabled selected>Selecione a Potência (kVA)</option>
-                                </select>
-                                <small>Substituirá [PTF1].</small>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="tensao_trafo_1">
-                                    <i class="fas fa-plug"></i> Tensão do Trafo 1: *
-                                </label>
-                                <select id="tensao_trafo_1" required>
-                                    <option value="" disabled selected>Selecione a Tensão</option>
-                                    <option value="220/127V">220/127V</option>
-                                    <option value="380V/220V">380V/220V</option>
-                                </select>
-                                <small>Substituirá [TTF1].</small>
-                            </div>
-                        </div>
-                        
-                        <div id="trafo_2_fields" class="form-grid" style="display: none; margin-top: 25px; border-top: 1px dashed #ddd; padding-top: 25px;">
-                            <div class="form-group">
-                                <label for="potencia_trafo_2">
-                                    <i class="fas fa-industry"></i> Potência do Trafo 2 (kVA):
-                                </label>
-                                <select id="potencia_trafo_2">
-                                     <option value="" disabled selected>Selecione a Potência (kVA)</option>
-                                </select>
-                                <small>Substituirá [PTF2].</small>
-                            </div>
-                            <div class="form-group">
-                                <label for="tensao_trafo_2">
-                                    <i class="fas fa-plug"></i> Tensão do Trafo 2:
-                                </label>
-                                <select id="tensao_trafo_2">
-                                    <option value="" disabled selected>Selecione a Tensão</option>
-                                    <option value="220/127V">220/127V</option>
-                                    <option value="380V/220V">380V/220V</option>
-                                </select>
-                                <small>Substituirá [TTF2].</small>
-                            </div>
-                        </div>
-                        
-                    </section>
+                    
                     <section class="form-section">
                         <h2><i class="fas fa-info-circle"></i> Informações Gerais</h2>
                         
@@ -209,21 +142,12 @@
                             
                             <div class="form-group">
                                 <label for="demanda">
-                                    <i class="fas fa-chart-line"></i> Demanda do Projeto (kVA): *
+                                    <i class="fas fa-chart-line"></i> Demanda do Projeto *
                                 </label>
                                 <input type="text" id="demanda" placeholder="Ex: 1500" required>
                                 <small>Substituirá [ZXZX] nos documentos</small>
                             </div>
-                            
-                            <div class="form-group">
-                                <label for="carga_instalada">
-                                    <i class="fas fa-fan"></i> Carga Instalada (kW): *
-                                </label>
-                                <input type="text" id="carga_instalada" placeholder="Ex: 850" required>
-                                <small>Substituirá [ZXXZ] (placeholder solicitado).</small>
-                            </div>
-                            
-                            <div class="form-group"></div> </div>
+                        </div>
                     </section>
                     
                     <section class="form-section">
