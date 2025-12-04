@@ -85,19 +85,50 @@ const CLIENTES = {
 const PT_TRAFO = [112.5, 150, 225, 500, 750, 1000, 1250, 1500];
 const TENSOES_TRAFO = ["220/127V", "380V/220V"]; 
 
-// Dados de proteção para 220/127V (Índices correspondem a PT_TRAFO)
+// --- DADOS DE PROTEÇÃO 220/127V ---
 const IB_220 = [296.05, 394.74, 592.11, 1315.79, 1973.68, 2631.58, 3289.47, 3947.36];
 const IN_220 = [300, 400, 630, 1600, 2000, 3200, 3500, 4000];
 const IZ_220 = [444, 624, 716, 1924, 2405, 3367, 4424, 4424];
 const CAB_220 = [70, 95, 150, 240, 240, 240, 300, 300];
 const QTD_CAB_220 = ["2x70", "2x95", "2x150", "4x240", "5x240", "7x240", "8x300", "8x300"];
+
+// NOVO: Corrente do Cabo (IZXY)
+const I_CAB_220 = [222, 269, 358, 481, 481, 481, 553, 553];
+
+// NOVO: Ajuste da Proteção (IAJU)
+const I_AJUSTE_220 = [
+    "300A – 100%", 
+    "400A – 100%", 
+    "600A – 95,24%", 
+    "1400A – 87,5%", 
+    "2000A – 100%", 
+    "2700A – 84,37%", 
+    "3300A – 94,29%", 
+    "4000A – 100%"
+];
  
-// Dados de proteção para 380V/220V (Índices correspondem a PT_TRAFO)
+// --- DADOS DE PROTEÇÃO 380V/220V ---
 const IB_380 = [170.93, 227.90, 341.85, 759.67, 1139.51, 1519.34, 1899.17, 2279.01];
 const IN_380 = [200, 300, 400, 800, 1250, 1600, 2000, 2500];
 const IZ_380 = [222, 444, 444, 816, 1443, 1924, 2405, 2886];
 const CAB_380 = [70, 70, 70, 185, 240, 240, 240, 240];
 const QTD_CAB_380 = ["70", "2x70", "2x70", "2x185", "3x240", "4x240", "5x240", "6x240"];
+
+// NOVO: Corrente do Cabo (IZXY)
+const I_CAB_380 = [222, 222, 222, 408, 481, 481, 481, 481];
+
+// NOVO: Ajuste da Proteção (IAJU)
+const I_AJUSTE_380 = [
+    "180A – 90%", 
+    "230A – 76,67%", 
+    "350A – 87,5%", 
+    "760A – 95%", 
+    "1140A – 91,2%", 
+    "1520A – 95%", 
+    "1900A – 95%", 
+    "2300A – 92%"
+];
+
 
 // Mapeamento dos meses em português
 const MESES_PT_BR = {
@@ -406,7 +437,7 @@ function validarFormulario() {
 }
 
 /**
- * FUNÇÃO DE AJUDA: Calcula os dados de proteção (IB, IN, IZ, CAB, QTD_CAB)
+ * FUNÇÃO DE AJUDA: Calcula os dados de proteção (IB, IN, IZ, CAB, QTD_CAB, I_CAB, I_AJUSTE)
  * para um transformador específico.
  */
 function getTrafoData(potencia, tensao, trafoNumber) {
@@ -417,7 +448,10 @@ function getTrafoData(potencia, tensao, trafoNumber) {
             [`INXX${trafoNumber}`]: 'N/A',
             [`IZXX${trafoNumber}`]: 'N/A',
             [`CABX${trafoNumber}`]: 'N/A',
-            [`QTDY${trafoNumber}`]: 'N/A'
+            [`QTDY${trafoNumber}`]: 'N/A',
+            // NOVOS
+            [`IZXY${trafoNumber}`]: 'N/A', 
+            [`IAJU${trafoNumber}`]: 'N/A'
         };
     }
 
@@ -430,6 +464,7 @@ function getTrafoData(potencia, tensao, trafoNumber) {
     }
 
     let IB_ARR, IN_ARR, IZ_ARR, CAB_ARR, QTD_CAB_ARR;
+    let I_CAB_ARR, I_AJUSTE_ARR; // NOVOS ARRAYS
 
     // Seleciona o conjunto de arrays de proteção com base na tensão
     if (tensao === "220/127V") {
@@ -438,23 +473,35 @@ function getTrafoData(potencia, tensao, trafoNumber) {
         IZ_ARR = IZ_220;
         CAB_ARR = CAB_220;
         QTD_CAB_ARR = QTD_CAB_220;
+        
+        I_CAB_ARR = I_CAB_220;
+        I_AJUSTE_ARR = I_AJUSTE_220;
+
     } else if (tensao === "380V/220V") {
         IB_ARR = IB_380;
         IN_ARR = IN_380;
         IZ_ARR = IZ_380;
         CAB_ARR = CAB_380;
         QTD_CAB_ARR = QTD_CAB_380;
+        
+        I_CAB_ARR = I_CAB_380;
+        I_AJUSTE_ARR = I_AJUSTE_380;
+
     } else {
         return getTrafoData('', '', trafoNumber); // Tensão desconhecida
     }
 
-    // Retorna o objeto com os novos placeholders e seus valores (CORRIGIDO: Removida a linha IZXY)
+    // Retorna o objeto com os placeholders e seus valores
     return {
         [`IBXX${trafoNumber}`]: IB_ARR[index],
         [`INXX${trafoNumber}`]: IN_ARR[index],
         [`IZXX${trafoNumber}`]: IZ_ARR[index],
         [`CABX${trafoNumber}`]: CAB_ARR[index],
-        [`QTDY${trafoNumber}`]: QTD_CAB_ARR[index]
+        [`QTDY${trafoNumber}`]: QTD_CAB_ARR[index],
+        
+        // NOVOS PLACEHOLDERS
+        [`IZXY${trafoNumber}`]: I_CAB_ARR[index], // Corrente do Cabo (I_CAB)
+        [`IAJU${trafoNumber}`]: I_AJUSTE_ARR[index] // Ajuste da Proteção (I_AJUSTE)
     };
 }
 
