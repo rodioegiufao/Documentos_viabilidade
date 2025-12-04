@@ -91,9 +91,8 @@ const IN_220 = [300, 400, 630, 1600, 2000, 3200, 3500, 4000];
 const IZ_220 = [444, 624, 716, 1924, 2405, 3367, 4424, 4424];
 const CAB_220 = [70, 95, 150, 240, 240, 240, 300, 300];
 const QTD_CAB_220 = ["2x70", "2x95", "2x150", "4x240", "5x240", "7x240", "8x300", "8x300"];
-
+const QTD_220 = [2, 2, 2, 4, 5, 7, 8, 8];
 const I_CAB_220 = [222, 269, 358, 481, 481, 481, 553, 553]; // Corrente do Cabo (IZXY)
-
 const I_AJUSTE_220 = [ // Ajuste da Proteção (IAJU)
     "300A – 100%", 
     "400A – 100%", 
@@ -111,9 +110,8 @@ const IN_380 = [200, 300, 400, 800, 1250, 1600, 2000, 2500];
 const IZ_380 = [222, 444, 444, 816, 1443, 1924, 2405, 2886];
 const CAB_380 = [70, 70, 70, 185, 240, 240, 240, 240];
 const QTD_CAB_380 = ["70", "2x70", "2x70", "2x185", "3x240", "4x240", "5x240", "6x240"];
-
+const QTD_380 = [1, 2, 2, 2, 3, 4, 5, 6];
 const I_CAB_380 = [222, 222, 222, 408, 481, 481, 481, 481]; // Corrente do Cabo (IZXY)
-
 const I_AJUSTE_380 = [ // Ajuste da Proteção (IAJU)
     "180A – 90%", 
     "230A – 76,67%", 
@@ -448,7 +446,8 @@ function getTrafoData(potencia, tensao, trafoNumber) {
             [`IZXY${trafoNumber}`]: 'N/A', 
             [`IAJU${trafoNumber}`]: 'N/A',
             // NOVO
-            [`IZ14${trafoNumber}`]: 'N/A'
+            [`IZ14${trafoNumber}`]: 'N/A',
+            [`QTD1${trafoNumber}`]: 'N/A'
         };
     }
 
@@ -463,7 +462,8 @@ function getTrafoData(potencia, tensao, trafoNumber) {
     let IB_ARR, IN_ARR, IZ_ARR, CAB_ARR, QTD_CAB_ARR;
     let I_CAB_ARR, I_AJUSTE_ARR; 
     let IZ_TO_CALCULATE_ARR; // Array base para o cálculo de 1,45
-
+    let QTD_ARR;
+    
     // Seleciona o conjunto de arrays de proteção com base na tensão
     if (tensao === "220/127V") {
         IB_ARR = IB_220;
@@ -476,7 +476,8 @@ function getTrafoData(potencia, tensao, trafoNumber) {
         I_AJUSTE_ARR = I_AJUSTE_220;
         
         IZ_TO_CALCULATE_ARR = IZ_220; // Usar IZ_220 para cálculo
-
+        QTD_ARR = QTD_220
+        
     } else if (tensao === "380V/220V") {
         IB_ARR = IB_380;
         IN_ARR = IN_380;
@@ -488,7 +489,7 @@ function getTrafoData(potencia, tensao, trafoNumber) {
         I_AJUSTE_ARR = I_AJUSTE_380;
         
         IZ_TO_CALCULATE_ARR = IZ_380; // Usar IZ_380 para cálculo
-
+        QTD_ARR = QTD_380;
     } else {
         return getTrafoData('', '', trafoNumber); // Tensão desconhecida
     }
@@ -515,7 +516,8 @@ function getTrafoData(potencia, tensao, trafoNumber) {
         [`IAJU${trafoNumber}`]: I_AJUSTE_ARR[index],
         
         // NOVO PLACEHOLDER DE CÁLCULO
-        [`IZ14${trafoNumber}`]: iz145Result
+        [`IZ14${trafoNumber}`]: iz145Result,
+        [`QTD1${trafoNumber}`]: QTD_ARR[index]
     };
 }
 
