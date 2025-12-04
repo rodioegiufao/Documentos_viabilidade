@@ -573,7 +573,7 @@ function coletarDadosFormulario() {
         'ZXZX': document.getElementById('demanda').value, // Demanda
         'DTIN': formatarData(document.getElementById('data_inicio').value),
         'DTFI': formatarData(document.getElementById('data_fim').value),
-        'PJDP': document.getElementById('tipo_pessoa_juridica').value
+        'PJDP': document.getElementById('tipo_pessoa_juridica').value.toLowerCase()
     };
     
     // Dados do engenheiro
